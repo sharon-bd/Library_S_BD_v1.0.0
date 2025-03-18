@@ -1,6 +1,13 @@
 # Python Project: Library Management System
 
-To run the system, navigate to the `\backend` directory and execute the following command:
+## Installation & Running
+1. Navigate to the project root directory (`Library_S_BD_v1.0.0`) after cloning
+2. Install required packages from the root directory:
+
+```
+pip install -r requirements.txt
+```
+3. To run the system, navigate to the `\backend` directory and execute:
 
 ```
 \backend>py app.py
