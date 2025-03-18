@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background-color: #f5f5dc; /* Background color like in the homepage */
+      }
+
+      .header {
+        padding: 10px;
+        background-color: #c2b280;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+
+      .container-box {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .btn-container {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+      }
+
+      h1 {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .link-bar {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        background-color: #e0d8c3;
+        padding: 10px 15px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+      }
+
+      .link-bar a {
+        font-size: 1rem; /* Smaller font size */
+        font-weight: normal; /* Not bold */
+        text-decoration: none;
+        color: #007bff; /* Blue color */
+        padding: 6px 12px;
+        border-radius: 5px;
+        margin-right: 8px;
+      }
+
+      .link-bar a:hover {
+        background-color: #d1c4a8;
+      }
+
+      @media (max-width: 768px) {
+        .container-box {
+          padding: 15px;
+        }
+
+        h1 {
+          font-size: 1.75rem;
+        }
+
+        .btn-container {
+          gap: 10px;
+        }
+
+        .link-bar a {
+          font-size: 0.9rem;
+          padding: 4px 8px;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .container-box {
+          padding: 10px;
+        }
+
+        h1 {
+          font-size: 1.5rem;
+        }
+
+        .btn-container {
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <h1 id="customerName">Loading...</h1>
+      </div>
+    </header>
+
+    <!-- Navigation Bar -->
+    <div class="container">
+      <div class="link-bar">
+        <a href="javascript:void(0)" onclick="returnToHomePage()">Homepage</a>
+        <a href="javascript:void(0)" onclick="window.location.href='customer_dashboard.html?ts=' + Date.now()">Dashboard</a>
+        <!-- other links -->
+      </div>
+    </div>
+
+    
+
+    <div class="container mt-3">
+      <div class="container-box">
+        <h3>Welcome to Your Dashboard</h3>
+        <p>Here you can manage your books and loans.</p>
+
+        <div class="btn-container">
+          <a href="recommended_books.html" class="btn btn-warning">
+            📚 Recommended Books
+          </a>
+          <button id="viewBooksButton" class="btn btn-success">
+            View Books (On Loan & Available)
+          </button>
+          <button id="loanedBooksButton" class="btn btn-primary">
+            Loaned Books
+          </button>
+          <button id="logoutButton" class="btn btn-danger">Logout</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap 5.3 Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Include the auth utils script
+      const script = document.createElement('script');
+      script.src = "/frontend/static/js/auth-utils.js";
+      script.onload = function() {
+        initializeDashboard();
+      };
+      document.head.appendChild(script);
+      
+      function initializeDashboard() {
+        // Wait a moment for cookies to be properly set after login redirect
+        setTimeout(() => {
+          if (!checkAuthentication()) return;
+          
+          // Set Authorization header for API requests if localStorage token exists
+          const headers = { "Content-Type": "application/json" };
+          const localToken = localStorage.getItem("customer_token");
+          if (localToken) {
+            headers["Authorization"] = `Bearer ${localToken}`;
+          }
+          
+          fetch("/api/customer_data", {
+            method: "GET",
+            headers: headers,
+            credentials: "include" // This ensures cookies are sent with the request
+          })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`Server returned status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // Check if data contains customer information (changed from success flag)
+            if (data.customer && data.customer.name) {
+              if (data.customer.id === 999 && data.customer.name === "Test Customer (Developer Mode)") {
+                document.getElementById("customerName").innerText = "Developer Mode";
+              } else {
+                document.getElementById("customerName").innerText = `Welcome, ${data.customer.name}`;
+              }
+            } else {
+              console.warn("Invalid customer data structure:", data);
+              alert("❌ Session expired or invalid. Please log in again.");
+              handleLogout();
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading customer data:", error);
+            alert("Error loading data. Please try logging in again.");
+            handleLogout();
+          });
+          
+          // Set up button event listeners
+          document.getElementById("viewBooksButton").addEventListener("click", function () {
+            localStorage.setItem("last_page", "available_books");
+            window.location.href = "customer_books_list.html?ts=" + Date.now();
+          });
+
+          document.getElementById("loanedBooksButton").addEventListener("click", function () {
+            localStorage.setItem("last_page", "loaned_books");
+            window.location.href = "loaned_books.html?ts=" + Date.now();
+          });
+          
+          // Event listener for customer logout functionality
+          document.getElementById("logoutButton").addEventListener("click", function (e) {
+            e.preventDefault();
+            console.log("Customer logout button clicked");
+            
+            // Store developer token if it exists before logout
+            const developerToken = localStorage.getItem("developer_token");
+            const devModeSession = document.cookie.includes("dev_mode_session=true");
+            
+            // Clear ONLY customer-related data
+            localStorage.removeItem("customer_token");
+            localStorage.removeItem("last_page");
+            
+            // Clear only the customer authentication cookie
+            document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/frontend/;";
+            document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/frontend/user_pages/;";
+            
+            console.log("Cookies after customer logout attempt:", document.cookie);
+            
+            // Use server-side logout with special parameter to indicate customer-only logout
+            fetch('/api/logout', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ 
+                preserveDeveloperAccess: true 
+              }),
+              credentials: 'include',
+            })
+            .then(response => response.json())
+            .then(data => {
+              console.log("Server-side logout complete");
+              
+              // Restore developer token if it existed
+              if (developerToken) {
+                localStorage.setItem("developer_token", developerToken);
+              }
+              
+              // Set a special cookie to indicate we should preserve developer access
+              if (devModeSession) {
+                document.cookie = "dev_mode_session=true; path=/;";
+              }
+            })
+            .catch(err => {
+              console.error("Error during server-side logout:", err);
+            })
+            .finally(() => {
+              // Always redirect, even if the fetch fails
+              console.log("Redirecting to homepage after customer logout");
+              window.location.href = "/frontend/html/homepage.html?logout=customer&ts=" + Date.now();
+            });
+          });
+        }, 300); // Small delay to ensure cookies are properly loaded
+      }
+      
+      // Define a local logout function that works even if the auth-utils.js hasn't loaded properly
+      function handleLogout() {
+        console.log("Logging out...");
+        
+        // Try to use the global logout function if available
+        if (typeof logout === 'function') {
+          logout();
+          return;
+        }
+        
+        // Fallback logout implementation if the global function isn't available
+        localStorage.removeItem("customer_token");
+        document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        window.location.href = "/frontend/html/homepage.html";
+      }
+    });
+
+    function initializePage() {
+      setTimeout(() => {
+        console.log("Starting authentication check...");
+        console.log("Cookie data:", document.cookie);
+        if (!checkAuthentication()) {
+          console.error("Authentication failed - redirecting to homepage");
+          return;
+        }
+        console.log("Authentication successful!");
+        
+        // Page-specific initialization follows
+        // ...
+      }, 500);
+    }
+
+    function checkTokenExpiration() {
+      // Get the token from cookies
+      const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('access_token='))
+        ?.split('=')[1];
+        
+      if (token) {
+        // Decode the token without verification (client-side only)
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        
+        const payload = JSON.parse(jsonPayload);
+        
+        // Get expiration time
+        if (payload.exp) {
+          const expirationTime = new Date(payload.exp * 1000);
+          const now = new Date();
+          const timeRemaining = expirationTime - now;
+          
+          if (timeRemaining > 0) {
+            // Calculate hours, minutes, seconds
+            const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
+            const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+            
+            // Show expiration info
+            const expirationInfoDiv = document.createElement('div');
+            expirationInfoDiv.className = 'expiration-warning';
+            expirationInfoDiv.textContent = `Session expires in: ${hours}h ${minutes}m ${seconds}s`;
+            expirationInfoDiv.style.backgroundColor = '#fff3cd';
+            expirationInfoDiv.style.color = '#856404';
+            expirationInfoDiv.style.padding = '0.75rem';
+            expirationInfoDiv.style.fontWeight = 'bold';  // Make the text bold
+            expirationInfoDiv.style.fontSize = '1.1rem';  // Slightly larger font
+            expirationInfoDiv.style.borderRadius = '0.25rem';
+            expirationInfoDiv.style.marginTop = '1rem';
+            expirationInfoDiv.style.textAlign = 'center';
+            expirationInfoDiv.style.border = '1px solid #ffeeba';  // Add border
+            
+            // Inserts expiration information into the page header
+            const headerDiv = document.querySelector('.header .container');
+            headerDiv.appendChild(expirationInfoDiv);
+            
+            // Update countdown every second
+            setInterval(() => {
+              const now = new Date();
+              const timeRemaining = expirationTime - now;
+              
+              if (timeRemaining > 0) {
+                const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
+                const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+                expirationInfoDiv.textContent = `Session expires in: ${hours}h ${minutes}m ${seconds}s`;
+              } else {
+                expirationInfoDiv.textContent = 'Session expired! Please log in again.';
+                expirationInfoDiv.style.backgroundColor = '#f8d7da';
+                expirationInfoDiv.style.color = '#721c24';
+              }
+            }, 1000);
+          }
+        }
+      }
+    }
+
+    // Function to check for server notifications and updates
+
+    // Call this function when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(checkTokenExpiration, 1000);
+      
+      // Intercepts homepage navigation to use custom function
+      document.querySelectorAll('a[href*="homepage.html"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          console.log("Intercepted homepage link click");
+          returnToHomePage();
+        });
+      });
+
+      // Attaches custom navigation to homepage buttons
+      const homepageButtons = document.querySelectorAll('.btn-homepage, [data-action="homepage"]');
+      homepageButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          console.log("Homepage button clicked");
+          returnToHomePage();
+        });
+      });
+    });
+
+    // Function for returning to homepage while preserving login state
+    function returnToHomePage() {
+      console.log("returnToHomePage function called");
+      // Ask user to confirm leaving the customer area
+      if (confirm("Return to the homepage? You'll remain logged in as a customer.")) {
+        console.log("User confirmed return to homepage");
+        // Use a proper query parameter to indicate we're returning from customer area
+        window.location.href = "/frontend/html/homepage.html?from=customer&ts=" + Date.now();
+      } else {
+        console.log("User cancelled return to homepage");
+      }
+    }
+    </script>
+  </body>
+</html>

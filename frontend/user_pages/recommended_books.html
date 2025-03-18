@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recommended Books</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <style>
+      body {
+        background-color: #f5f5dc;
+      }
+
+      .header {
+        padding: 10px;
+        background-color: #c2b280;
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      .link-bar {
+        display: flex;
+        justify-content: flex-start;
+        background-color: #e0d8c3;
+        padding: 10px 15px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+      }
+
+      .link-bar a {
+        font-size: 1rem;
+        font-weight: normal;
+        text-decoration: none;
+        color: #007bff;
+        padding: 6px 12px;
+        border-radius: 5px;
+        margin-right: 8px;
+      }
+
+      .link-bar a:hover {
+        color: #0056b3;
+        background-color: transparent;
+      }
+
+      .container-box {
+        background-color: #131a22; /* Dark, pleasant blue-gray background for recommended books */
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        color: #fff; /* White text for readability on dark background */
+      }
+
+      .carousel-item {
+        background-color: #131a22; /* Match the container background for consistency */
+        padding: 10px; /* Optional padding for better spacing */
+        color: #fff; /* White text for readability */
+      }
+
+      .carousel-item img {
+        width: 200px;
+        height: 300px;
+        object-fit: cover;
+        margin: auto;
+        cursor: pointer;
+      }
+
+      .carousel-item h5,
+      .carousel-item p {
+        color: #fff; /* Ensure text in carousel items is white */
+      }
+
+      .genre-btn {
+        margin: 10px;
+        transition: all 0.3s ease;
+      }
+
+      /* Unified style for all selected genre buttons - Thick black border with smooth transitions, maintaining individual colors */
+      .genre-btn:not(.inactive) {
+        border: 3px solid black; /* Thick black border for all selected genre buttons */
+        margin: 10px;
+        transition: all 0.3s ease; /* Smooth transition for border and other properties */
+      }
+
+      .genre-btn-row {
+        display: flex; /* Arrange buttons in a row */
+        justify-content: center; /* Center the entire row */
+        gap: 10px; /* Space between buttons */
+        margin: 10px 0; /* Margin above and below the row */
+      }
+
+      .genre-btn.classics {
+        order: 2; /* Move Classics to the middle */
+      }
+
+      .genre-btn.history {
+        order: 1; /* Place History to the left of Classics */
+      }
+
+      .genre-btn.bestsellers {
+        order: 3; /* Place Best Sellers to the right of Classics */
+      }
+
+      /* Position and style enlarged carousel controls */
+      .carousel-control-prev,
+      .carousel-control-next {
+        width: 60px; /* Larger width for bigger buttons */
+        height: 60px; /* Larger height for bigger buttons */
+        top: 50%;
+        transform: translateY(-50%);
+        transition: all 0.3s ease; /* Smooth transition for size and position changes */
+        position: absolute; /* Ensure controls are positioned precisely */
+      }
+
+      .carousel-control-prev {
+        left: 0%; /* Position Previous button right at the left edge of the book images */
+      }
+
+      .carousel-control-next {
+        right: 0%; /* Position Next button right at the right edge of the book images */
+      }
+
+      .offcanvas {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: -100%;
+        width: 300px;
+        max-width: 100%;
+        padding: 1rem;
+        background-color: #fff;
+        box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+        transition: right 0.3s ease;
+        z-index: 1045;
+      }
+
+      .offcanvas.show {
+        right: 0;
+      }
+
+      .offcanvas-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .offcanvas-body {
+        overflow-y: auto;
+      }
+
+      /* Custom styles for carousel control icons */
+      .carousel-control-prev-icon,
+      .carousel-control-next-icon {
+        background-image: none; /* Remove the default background image */
+        background-color: #28a745; /* Dark green background for navigation buttons in default state */
+        border-radius: 50%;
+        width: 60px; /* Match button width */
+        height: 60px; /* Match button height */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease; /* Smooth transition for color change */
+      }
+
+      .carousel-control-prev-icon:hover,
+      .carousel-control-next-icon:hover,
+      .carousel-control-prev-icon:active,
+      .carousel-control-next-icon:active {
+        background-color: #4caf50; /* Lighter green background for hover and active states */
+      }
+
+      .carousel-control-prev-icon::after {
+        content: "‹"; /* Left arrow */
+        color: white;
+        font-size: 3rem; /* Larger arrows for bigger buttons */
+        line-height: 1;
+      }
+
+      .carousel-control-next-icon::after {
+        content: "›"; /* Right arrow */
+        color: white;
+        font-size: 3rem; /* Larger arrows for bigger buttons */
+        line-height: 1;
+      }
+
+      .carousel-control-next-icon {
+        background-color: #28a745 !important; /* Same dark green as the Previous button */
+      }
+
+      /* Style for text labels next to carousel controls */
+      .carousel-control-label {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        color: white;
+        font-size: 1rem;
+        font-weight: bold;
+        margin: 0 10px; /* Space between label and button */
+        transition: all 0.3s ease; /* Smooth transition for label movement */
+      }
+
+      .carousel-control-prev .carousel-control-label {
+        left: 70px; /* Position label to the right of Previous button */
+      }
+
+      .carousel-control-next .carousel-control-label {
+        right: 70px; /* Position label to the left of Next button */
+      }
+
+      .genre-btn.inactive {
+        filter: grayscale(100%);
+      }
+
+      /* Custom style for purple Best Sellers button in default state */
+      .btn-purple {
+        background-color: #6f42c1; /* Deep purple, similar to Bootstrap primary but darker */
+        border-color: #6f42c1;
+        color: #fff;
+      }
+
+      /* Remove hover effect to maintain the same design when mouse is over */
+      .btn-purple:hover {
+        background-color: #6f42c1; /* Same purple as default, no change on hover */
+        border-color: #6f42c1;
+        color: #fff;
+      }
+
+      /* Ensure Best Sellers stays purple and maintains design when selected, no hover change */
+      .genre-btn[data-genre="bestSellers"]:not(.inactive) {
+        background-color: purple !important; /* Purple background */
+        border-color: purple !important; /* Purple border */
+        color: white !important; /* White text */
+        border: 3px solid black !important; /* Thick black border for selected Best Sellers */
+      }
+
+      /* Remove hover effect for Best Sellers when selected to maintain the same design */
+      .genre-btn[data-genre="bestSellers"]:not(.inactive):hover {
+        background-color: purple !important; /* No change, maintain purple background */
+        border-color: purple !important; /* No change, maintain purple border */
+        color: white !important; /* No change, maintain white text */
+        border: 3px solid black !important; /* Keep thick black border on hover */
+      }
+
+      /* Style for Best Sellers button when inactive (gray color) */
+      .genre-btn.bestsellers.inactive {
+        filter: grayscale(100%); /* Keep grayscale effect */
+        background-color: #6c757d !important; /* Bootstrap's default gray */
+        border-color: #6c757d !important;
+        color: #fff !important; /* White text for readability on gray */
+      }
+
+      /* Style for the selected category text */
+      .selected-category {
+        font-size: 1.5rem; /* Larger font size */
+        text-decoration: underline; /* Underline */
+        margin-top: 10px; /* Margin for spacing above */
+        margin-bottom: 20px; /* Add margin below for spacing */
+        text-align: center; /* Center align */
+      }
+
+      /* Responsive design improvements */
+      @media (max-width: 768px) {
+        /* Carousel adjustments for tablets */
+        .carousel-item img {
+          width: 150px;
+          height: 225px;
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+          width: 40px;
+          height: 40px;
+        }
+
+        .carousel-control-label {
+          display: none; /* Hide labels on smaller screens */
+        }
+
+        /* Genre buttons adjustments */
+        .genre-btn-row {
+          flex-wrap: wrap;
+          gap: 5px;
+        }
+
+        .genre-btn {
+          margin: 5px;
+          font-size: 0.9rem;
+        }
+      }
+
+      @media (max-width: 576px) {
+        /* Mobile adjustments */
+        .container-box {
+          padding: 10px;
+        }
+
+        .carousel-item img {
+          width: 120px;
+          height: 180px;
+        }
+
+        h1 {
+          font-size: 1.5rem;
+        }
+
+        .selected-category {
+          font-size: 1.2rem;
+        }
+
+        /* Stack genre buttons vertically on mobile */
+        .genre-btn-row {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .genre-btn {
+          width: 80%;
+          margin: 5px 0;
+        }
+
+        /* Adjust offcanvas for mobile */
+        .offcanvas {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <h1>📚 Recommended Books</h1>
+      </div>
+    </header>
+
+    <!-- Navigation Bar -->
+    <div class="container">
+      <div class="link-bar">
+        <a href="../html/homepage.html">Homepage</a>
+        <a href="javascript:void(0)" onclick="window.location.href='customer_dashboard.html?ts=' + Date.now()">Dashboard</a>
+        <a href="javascript:void(0)" onclick="window.location.href='recommended_books.html?ts=' + Date.now()">Recommended Books</a>
+        <a href="javascript:void(0)" onclick="window.location.href='loaned_books.html?ts=' + Date.now()">My Loaned Books</a>
+        <a href="javascript:void(0)" onclick="window.location.href='customer_books_list.html?ts=' + Date.now()">Books List</a>
+      </div>
+    </div>
+
+    <div class="container mt-3">
+      <div class="container-box">
+        <h3>Top Recommended Books</h3>
+        <p>Discover the best books recommended by our readers 📖</p>
+        <div id="selectedCategory" class="selected-category">Best Sellers</div>
+
+        <!-- Bootstrap Carousel for Recommended Books -->
+        <div id="bookCarousel" class="carousel slide" data-bs-interval="false">
+          <div class="carousel-inner" id="carouselContent">
+            <!-- Books will be dynamically loaded here -->
+          </div>
+          <button
+            class="carousel-control-prev"
+            type="button"
+            data-bs-target="#bookCarousel"
+            data-bs-slide="prev"
+          >
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+            <span class="carousel-control-label">Previous</span>
+          </button>
+          <button
+            class="carousel-control-next"
+            type="button"
+            data-bs-target="#bookCarousel"
+            data-bs-slide="next"
+          >
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+            <span class="carousel-control-label">Next</span>
+          </button>
+        </div>
+
+        <!-- Genre Buttons -->
+        <div class="genre-btn-row">
+          <button
+            class="btn btn-primary genre-btn classics"
+            data-genre="classics"
+            onclick="loadBooks('classics')"
+          >
+            Classics
+          </button>
+          <button
+            class="btn btn-warning genre-btn history"
+            data-genre="history"
+            onclick="loadBooks('history')"
+          >
+            History
+          </button>
+          <button
+            class="btn btn-purple genre-btn bestsellers"
+            data-genre="bestSellers"
+            onclick="loadBooks('bestSellers')"
+          >
+            Best Sellers
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Off-Canvas Template -->
+    <div class="offcanvas" id="bookInfoCanvas">
+      <div class="offcanvas-header">
+        <h5 id="bookTitle">Book Title</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="offcanvas"
+          aria-label="Close"
+          onclick="closeOffCanvas()"
+        ></button>
+      </div>
+      <div class="offcanvas-body">
+        <img id="bookImage" src="" alt="Book Image" class="img-fluid mb-3" />
+        <p id="bookAuthor"></p>
+        <p id="bookDescription">No description available.</p>
+        <h6>Other books by this author:</h6>
+        <ul id="otherBooks"></ul>
+      </div>
+    </div>
+
+    <!-- Bootstrap 5.3 Bundle and jQuery -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Main page initialization function that runs when the page loads
+      window.onload = function() {
+        // Pre-load data to avoid flash of empty content
+        preloadBestSellers();
+        
+        // Include the auth utils script with proper error handling
+        const script = document.createElement('script');
+        script.src = "/frontend/static/js/auth-utils.js";
+        script.onload = function() {
+          initializeWithRetry();
+        };
+        script.onerror = function() {
+          console.error("Failed to load auth-utils.js - trying to continue anyway");
+          // Try to continue without auth utils - emergency fallback
+          showFallbackContent();
+        };
+        document.head.appendChild(script);
+      };
+
+      // Show something even if auth fails to load
+      function preloadBestSellers() {
+        const carouselContent = document.getElementById("carouselContent");
+        const firstBook = booksByGenre.bestSellers[0];
+        carouselContent.innerHTML = `
+          <div class="carousel-item active">
+            <img src="${firstBook.img}" alt="${firstBook.title}" />
+            <h5>${firstBook.title}</h5>
+            <p>By ${firstBook.author}</p>
+          </div>
+        `;
+      }
+
+      // Progressive retry mechanism for authentication initialization
+      function initializeWithRetry(attempt = 1) {
+        const maxAttempts = 3;
+        const delay = attempt * 300; // Increasing delays: 300ms, 600ms, 900ms
+        
+        console.log(`Authentication attempt ${attempt} of ${maxAttempts} (delay: ${delay}ms)`);
+        
+        setTimeout(() => {
+          try {
+            // Check if auth function exists
+            if (typeof checkAuthentication !== 'function') {
+              console.error("Authentication function not available");
+              if (attempt < maxAttempts) {
+                console.log("Retrying authentication...");
+                initializeWithRetry(attempt + 1);
+                return;
+              } else {
+                showFallbackContent();
+                return;
+              }
+            }
+            
+            // Debug authentication state
+            console.log("Auth check starting, cookie data:", document.cookie);
+            const isAuthenticated = checkAuthentication();
+            console.log("Authentication check result:", isAuthenticated);
+            
+            if (!isAuthenticated) {
+              console.error("Authentication failed - user will be redirected");
+              return; // The checkAuthentication function handles redirection
+            }
+            
+            console.log("Authentication successful!");
+            
+            // Initialize the page with Best Sellers
+            loadBooks("bestSellers");
+            
+            // Make sure the Best Sellers button is active and purple
+            document.querySelectorAll(".genre-btn").forEach((button) => {
+              if (button.getAttribute("data-genre") === "bestSellers") {
+                button.classList.remove("inactive");
+                button.classList.add("btn-purple");
+              } else {
+                button.classList.add("inactive");
+              }
+            });
+            
+            // Update navigation links
+            document.querySelectorAll(".link-bar a").forEach(link => {
+              if (!link.href.includes("homepage")) {
+                const baseUrl = link.href.split("?")[0];
+                link.href = baseUrl + "?ts=" + Date.now();
+              }
+            });
+            
+            // Specifically click the Best Sellers button to ensure proper initialization
+            setTimeout(() => {
+              document.querySelector('button[data-genre="bestSellers"]').click();
+            }, 100);
+            
+            console.log("Page initialization completed successfully");
+          } catch (error) {
+            console.error("Error during initialization:", error);
+            if (attempt < maxAttempts) {
+              console.log("Retrying after error...");
+              initializeWithRetry(attempt + 1);
+            } else {
+              showFallbackContent();
+            }
+          }
+        }, delay);
+      }
+
+      function showFallbackContent() {
+        console.warn("Using fallback content mode - limited functionality");
+        loadBooks("bestSellers");
+        
+        // Show a warning to the user
+        const container = document.querySelector('.container-box');
+        const warning = document.createElement('div');
+        warning.className = 'alert alert-warning';
+        warning.innerHTML = 'Limited functionality mode - some features may not work properly. <a href="customer_dashboard.html?ts=' + Date.now() + '">Return to dashboard</a>';
+        container.prepend(warning);
+      }
+
+      // Define books data by genre
+      const booksByGenre = {
+        classics: [
+          {
+            title: "Pride and Prejudice",
+            author: "Jane Austen",
+            img: "https://m.media-amazon.com/images/I/91fDvMK+aEL._SL1500_.jpg",
+            desc: "A romantic novel of manners.",
+          },
+          {
+            title: "Moby-Dick",
+            author: "Herman Melville",
+            img: "https://m.media-amazon.com/images/I/61RlZQM+gwL._SL1000_.jpg",
+            desc: "A story of obsession and revenge.",
+          },
+          {
+            title: "Great Expectations",
+            author: "Charles Dickens",
+            img: "https://m.media-amazon.com/images/I/81elBAS5LcL._SL1500_.jpg",
+            desc: "A classic novel about personal growth and ambition.",
+          },
+        ],
+        bestSellers: [
+          {
+            title: "The Da Vinci Code",
+            author: "Dan Brown",
+            img: "https://m.media-amazon.com/images/I/71Zp31dFeUL._SL1500_.jpg",
+            desc: "A thrilling mystery novel.",
+          },
+          {
+            title: "Harry Potter",
+            author: "J.K. Rowling",
+            img: "https://m.media-amazon.com/images/I/51UoqRAxwEL.jpg",
+            desc: "A magical adventure series.",
+          },
+          {
+            title: "The Alchemist",
+            author: "Paulo Coelho",
+            img: "https://m.media-amazon.com/images/I/81ioPZFMeUL._SL1500_.jpg",
+            desc: "A philosophical story about following your dreams.",
+          },
+        ],
+        history: [
+          {
+            title: "Sapiens",
+            author: "Yuval Noah Harari",
+            img: "https://m.media-amazon.com/images/I/712Uo++xK2L._SL1500_.jpg",
+            desc: "A history of humankind.",
+          },
+          {
+            title: "The Guns of August",
+            author: "Barbara Tuchman",
+            img: "https://m.media-amazon.com/images/I/71vkxIftlzL._SL1500_.jpg",
+            desc: "A look at the early days of WWI.",
+          },
+          {
+            title: "1776",
+            author: "David McCullough",
+            img: "https://m.media-amazon.com/images/I/81j0BRX2FHL._SL1500_.jpg",
+            desc: "A detailed account of the American Revolution.",
+          },
+        ],
+      };
+
+      // Load books by genre and update button states
+      function loadBooks(genre) {
+        // Update button states to indicate the selected genre
+        const buttons = document.querySelectorAll(".genre-btn");
+        buttons.forEach((button) => {
+          if (button.getAttribute("data-genre") === genre) {
+            button.classList.remove("inactive");
+            if (genre === "bestSellers") {
+              button.classList.add("btn-purple"); // Ensure purple color for Best Sellers when selected
+            }
+          } else {
+            button.classList.add("inactive");
+            if (button.getAttribute("data-genre") === "bestSellers") {
+              button.classList.remove("btn-purple"); 
+            }
+          }
+        });
+
+        // Update the selected category text with "3 ..." for each category
+        const selectedCategory = document.getElementById("selectedCategory");
+        if (genre === "classics") {
+          selectedCategory.textContent = "3 Classics";
+        } else if (genre === "bestSellers") {
+          selectedCategory.textContent = "3 Best Sellers";
+        } else if (genre === "history") {
+          selectedCategory.textContent = "3 History books";
+        }
+
+        // Load and display books in the carousel for the selected genre
+        const carouselContent = document.getElementById("carouselContent");
+        carouselContent.innerHTML = "";
+
+        booksByGenre[genre].forEach((book, index) => {
+          const activeClass = index === 0 ? "active" : "";
+          const bookItem = `
+            <div class="carousel-item ${activeClass}">
+              <img src="${book.img}" alt="${book.title}" onclick="showBookInfo('${book.title}', '${book.author}', '${book.img}', '${book.desc}')" />
+              <h5>${book.title}</h5>
+              <p>By ${book.author}</p>
+            </div>
+          `;
+          carouselContent.innerHTML += bookItem;
+        });
+
+        // Reset carousel to first slide
+        const carousel = new bootstrap.Carousel(
+          document.getElementById("bookCarousel")
+        );
+        carousel.to(0);
+        
+        // Refresh the authentication token while user is active
+        if (typeof refreshSession === 'function') {
+          refreshSession();
+        }
+      }
+
+      // Show book info in the offcanvas panel
+      function showBookInfo(title, author, img, desc) {
+        document.getElementById("bookTitle").textContent = title;
+        document.getElementById("bookAuthor").textContent = `Author: ${author}`;
+        document.getElementById("bookImage").src = img;
+        document.getElementById("bookDescription").textContent = desc;
+        
+        // Find other books by the same author
+        const otherBooks = [];
+        Object.values(booksByGenre).forEach(books => {
+          books.forEach(book => {
+            if (book.author === author && book.title !== title) {
+              otherBooks.push(book);
+            }
+          });
+        });
+        
+        // Display other books by the same author
+        const otherBooksElement = document.getElementById("otherBooks");
+        otherBooksElement.innerHTML = "";
+        if (otherBooks.length > 0) {
+          otherBooks.forEach(book => {
+            const li = document.createElement("li");
+            li.textContent = book.title;
+            otherBooksElement.appendChild(li);
+          });
+        } else {
+          otherBooksElement.innerHTML = "<li>No other books by this author in our collection</li>";
+        }
+        
+        // Display the offcanvas
+        const offcanvas = document.getElementById("bookInfoCanvas");
+        offcanvas.classList.add("show");
+      }
+
+      // Close the offcanvas
+      function closeOffCanvas() {
+        const offcanvas = document.getElementById("bookInfoCanvas");
+        offcanvas.classList.remove("show");
+      }
+    </script>
+  </body>
+</html>

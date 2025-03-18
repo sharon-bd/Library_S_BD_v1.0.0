@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customers List</title>
+    <!-- Bootstrap 5.3 CSS with integrity hash -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+    <!-- Toastify CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
+    <style>
+      .header {
+        padding: 10px;
+        background-color: #c2b280;
+        margin-bottom: 20px;
+      }
+      .content {
+        padding: 20px;
+      }
+      .table-striped tbody tr:nth-of-type(1n) {
+        background-color: #f5f5dc; /* Light Beige */
+        color: black;
+      }
+      .table-striped tbody tr:nth-of-type(3n + 1) {
+        background-color: #f5f5dc; /* Light Beige */
+        color: black;
+      }
+      .table-striped tbody tr:nth-of-type(3n + 2) {
+        background-color: #e3e1d4; /* Medium Beige */
+        color: black;
+      }
+      .table-striped tbody tr:nth-of-type(3n + 3) {
+        background-color: #d9d5c3; /* Dark Beige */
+        color: black;
+      }
+      /* Styles for Enable and Disable buttons */
+      .btn-enable {
+        background-color: #28a745; /* Green */
+        color: white;
+      }
+      .btn-disable {
+        background-color: #dc3545; /* Red */
+        color: white;
+      }
+      /* Center align text in Customer ID column */
+      td.text-center {
+        text-align: center;
+      }
+      /* Spinner styles for loading state */
+      .spinner-border-sm {
+        width: 1rem;
+        height: 1rem;
+        margin-right: 0.5rem;
+      }
+      .btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.7;
+      }
+      /* Reset button style */
+      #resetSearch {
+        width: 100%;
+      }
+      /* Standard toast notifications */
+      .toast-success {
+        background: linear-gradient(to right, #28a745, #20c997) !important;
+        color: white;
+        border-radius: 6px;
+        text-align: center;
+      }
+      .toast-error {
+        background: linear-gradient(to right, #dc3545, #c82333) !important;
+        color: white;
+        border-radius: 6px;
+        text-align: center;
+      }
+      /* Standard date input styling for all pages */
+
+      /* Base styles for date inputs */
+      input[type="date"],
+      input.date-input {
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+      }
+
+      /* Focus state */
+      input[type="date"]:focus,
+      input.date-input:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      }
+
+      /* Custom placeholder for date inputs */
+      input[type="date"]::-webkit-datetime-edit-text,
+      input[type="date"]::-webkit-datetime-edit-month-field,
+      input[type="date"]::-webkit-datetime-edit-day-field,
+      input[type="date"]::-webkit-datetime-edit-year-field {
+        color: #495057;
+      }
+
+      input[type="date"]::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        opacity: 0.6;
+      }
+
+      input[type="date"]::-webkit-calendar-picker-indicator:hover {
+        opacity: 1;
+      }
+
+      /* Styling for date fields before a value is selected */
+      input[type="date"]:before {
+        content: attr(placeholder);
+        color: #6c757d;
+        position: absolute;
+        width: calc(100% - 40px); /* Account for calendar icon */
+      }
+
+      input[type="date"]:focus:before,
+      input[type="date"]:valid:before {
+        content: "";
+      }
+
+      /* Ensure consistent styling for date inputs in all browsers */
+      input.date-input::placeholder {
+        color: #6c757d;
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <h1 class="text-center">Customers List</h1>
+      </div>
+    </header>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav d-flex flex-wrap">
+            <li class="nav-item">
+              <a class="btn btn-link" href="homepage.html">Homepage</a>
+            </li>
+            <li class="nav-item">
+              <a href="loan_book.html" class="btn btn-link">Loan a Book</a>
+            </li>
+            <li class="nav-item">
+              <a href="return_book.html" class="btn btn-link">Return Book</a>
+            </li>
+            <li class="nav-item">
+              <a href="loans.html" class="btn btn-link">Loans</a>
+            </li>
+            <li class="nav-item">
+              <a href="add_customer.html" class="btn btn-link">Add Customer</a>
+            </li>
+            <li class="nav-item">
+              <a href="add_book.html" class="btn btn-link">Add Book</a>
+            </li>
+            <li class="nav-item">
+              <a href="books_list.html" class="btn btn-link">Books List</a>
+            </li>
+            <li class="nav-item">
+              <a href="remove_book.html" class="btn btn-link">Remove Book</a>
+            </li>
+            <li class="nav-item">
+              <a href="late_loans.html" class="btn btn-link">Late Loans</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="content">
+      <div class="container">
+        <h2>Customers List</h2>
+        <!-- Search Fields - Single Row -->
+        <div class="row mb-3">
+          <div class="col-md-2">
+            <input
+              type="text"
+              id="searchId"
+              class="form-control mb-2"
+              placeholder="Search by ID"
+              onkeyup="searchTable()"
+            />
+          </div>
+          <div class="col-md-3">
+            <input
+              type="text"
+              id="searchName"
+              class="form-control mb-2"
+              placeholder="Search by Name"
+              onkeyup="searchTable()"
+            />
+          </div>
+          <div class="col-md">
+            <input
+              type="text"
+              id="searchCity"
+              class="form-control mb-2"
+              placeholder="Search by City"
+              onkeyup="searchTable()"
+            />
+          </div>
+          <div class="col-md">
+            <input
+              type="text"
+              id="searchAge"
+              class="form-control mb-2"
+              placeholder="Search by Age"
+              onkeyup="searchTable()"
+            />
+          </div>
+          <div class="col-md">
+            <input
+              type="text"
+              id="searchBirthDate"
+              class="form-control mb-2"
+              placeholder="Search by Birth Date"
+              onkeyup="searchTable()"
+            />
+          </div>
+          <div class="col-md">
+            <input
+              type="text"
+              id="searchEmail"
+              class="form-control mb-2"
+              placeholder="Search by Email"
+              onkeyup="searchTable()"
+            />
+            <button
+              id="resetSearch"
+              class="btn btn-success mt-2"
+              onclick="resetSearchFields()"
+            >
+              Reset Search
+            </button>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th class="text-center">Customer ID</th>
+                <th>Name</th>
+                <th>City</th>
+                <th>Age</th>
+                <th>Birth Date</th>
+                <th>Email</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="customers-table-body">
+              <!-- Table rows will be added dynamically here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <!-- Date utilities file -->
+    <script src="../js/date-utils.js"></script>
+    
+    <!-- Bootstrap JS with integrity hash -->
+    <script 
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+      crossorigin="anonymous"
+    ></script>
+    
+    <!-- Toastify JS -->
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <!-- Date utilities for consistent date formatting -->
+    
+
+    <script>
+
+
+document.addEventListener("DOMContentLoaded", function() {
+  // Initialize date inputs with standardized format
+  initializeDateInputs();
+  
+  // Load customer data
+  fetchCustomers();
+});
+
+// Format date as DD.MM.YYYY for consistent display
+function formatDateForDisplay(dateValue, defaultValue = "N/A") {
+  if (!dateValue) return defaultValue;
+  
+  const date = new Date(dateValue);
+  if (isNaN(date.getTime())) return defaultValue;
+  
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  
+  return `${day}.${month}.${year}`;
+}
+
+// Check if a search input matches a displayed date
+function isDateMatchingSearch(searchText, displayDate) {
+  if (!searchText) return true;
+  if (!displayDate) return false;
+  
+  // Case-insensitive matching
+  const searchLower = searchText.toLowerCase();
+  const displayLower = displayDate.toLowerCase();
+  
+  // Support partial date matching (just day, month, year or combinations)
+  return displayLower.includes(searchLower);
+}
+
+// Fetch and display all customers - with improved error handling
+// Update the API endpoint path to match your backend structure
+function fetchCustomers() {
+  fetch("/api/customers")  // Consistent path structure
+    .then(response => {
+      // Check if response is OK and handle errors properly
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      const tableBody = document.getElementById("customers-table-body");
+      tableBody.innerHTML = ''; // Clear existing content
+      
+      if (!Array.isArray(data)) {
+        throw new Error("Invalid data format: expected array of customers");
+      }
+      
+      data.forEach(customer => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td class="text-center">${customer.id}</td>
+          <td>${customer.name}</td>
+          <td>${customer.city}</td>
+          <td>${customer.age}</td>
+          <td>${formatDateForDisplay(customer.birth_date)}</td>
+          <td>${customer.email || "N/A"}</td>
+          <td>
+            <button 
+              class="btn ${customer.is_active ? "btn-disable" : "btn-enable"}"
+              onclick="toggleCustomerStatus(${customer.id}, '${
+                customer.is_active ? "disable" : "enable"
+              }', this)"
+            >
+              ${customer.is_active ? "Disable" : "Enable"}
+            </button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    })
+    .catch(error => {
+      console.error("Error fetching customers:", error);
+      showToast("Error fetching customers. Please try again.", "toast-error");
+      
+      // Update UI to show error state
+      const tableBody = document.getElementById("customers-table-body");
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="7" class="text-center text-danger">
+            <p>Failed to load customer data.</p>
+            <p>Error: ${error.message}</p>
+            <button class="btn btn-primary" onclick="fetchCustomers()">Try Again</button>
+          </td>
+        </tr>
+      `;
+    });
+}
+
+// Table search with improved date handling
+function searchTable() {
+  const searchId = document
+    .getElementById("searchId")
+    .value.toUpperCase();
+  const searchName = document
+    .getElementById("searchName")
+    .value.toUpperCase();
+  const searchCity = document
+    .getElementById("searchCity")
+    .value.toUpperCase();
+  const searchAge = document
+    .getElementById("searchAge")
+    .value.toUpperCase();
+  const searchEmail = document
+    .getElementById("searchEmail")
+    .value.toUpperCase();
+  const searchBirthDate = document
+    .getElementById("searchBirthDate")
+    .value;
+  
+  const table = document.getElementById("customers-table-body");
+  const rows = table.getElementsByTagName("tr");
+  for (let i = 0; i < rows.length; i++) {
+    const cells = rows[i].getElementsByTagName("td");
+    const id = cells[0].textContent || cells[0].innerText;
+    const name = cells[1].textContent || cells[1].innerText;
+    const city = cells[2].textContent || cells[2].innerText;
+    const age = cells[3].textContent || cells[3].innerText;
+    const birthDate = cells[4].textContent || cells[4].innerText;
+    const email = cells[5].textContent || cells[5].innerText;
+    
+    const idMatch = id.toUpperCase().includes(searchId);
+    const nameMatch = name.toUpperCase().includes(searchName);
+    const cityMatch = city.toUpperCase().includes(searchCity);
+    const ageMatch = age.toUpperCase().includes(searchAge);
+    const birthDateMatch = !searchBirthDate || isDateMatchingSearch(searchBirthDate, birthDate);
+    const emailMatch = email.toUpperCase().includes(searchEmail);
+    
+    if (
+      idMatch &&
+      nameMatch &&
+      cityMatch &&
+      ageMatch &&
+      birthDateMatch &&
+      emailMatch
+    ) {
+      rows[i].style.display = "";
+    } else {
+      rows[i].style.display = "none";
+    }
+  }
+  
+  // Log after search completes (debounced)
+  debouncedLogSearch();
+}
+
+// Function to log customer search operations
+function logCustomerSearch() {
+  // Get search field values
+  const searchId = document.getElementById("searchId").value.trim();
+  const searchName = document.getElementById("searchName").value.trim();
+  const searchCity = document.getElementById("searchCity").value.trim();
+  const searchAge = document.getElementById("searchAge").value.trim();
+  const searchBirthDate = document.getElementById("searchBirthDate").value.trim();
+  const searchEmail = document.getElementById("searchEmail").value.trim();
+  
+  // Build search criteria object
+  const searchParams = {};
+  if (searchId) searchParams.id = searchId;
+  if (searchName) searchParams.name = searchName;
+  if (searchCity) searchParams.city = searchCity;
+  if (searchAge) searchParams.age = searchAge;
+  if (searchBirthDate) searchParams.birthDate = searchBirthDate;
+  if (searchEmail) searchParams.email = searchEmail;
+  
+  // Count visible rows after filtering
+  const table = document.getElementById("customers-table-body");
+  const rows = table.getElementsByTagName("tr");
+  let visibleCount = 0;
+  let totalCount = rows.length;
+  
+  for (let i = 0; i < rows.length; i++) {
+    if (rows[i].style.display !== "none") {
+      visibleCount++;
+    }
+  }
+  
+  // Send search data to server for logging
+  fetch('/api/log_search', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      pageType: 'customers',
+      searchParams: searchParams,
+      resultCount: visibleCount,
+      totalRecords: totalCount
+    })
+  }).catch(err => console.error('Error logging search:', err));
+}
+
+// Create debounced version of the log function to avoid too many requests
+const debouncedLogSearch = (function() {
+  let timeout = null;
+  return function() {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      logCustomerSearch();
+    }, 800);
+  };
+})();
+
+// Also modify resetSearchFields to trigger logging
+function resetSearchFields() {
+  // Array of search field IDs
+  const searchFields = [
+    "searchId",
+    "searchName",
+    "searchCity",
+    "searchAge",
+    "searchBirthDate",
+    "searchEmail",
+  ];
+
+  // Clear all search inputs
+  searchFields.forEach((fieldId) => {
+    document.getElementById(fieldId).value = "";
+  });
+
+  // Trigger table search to show all rows
+  searchTable();
+
+  // Show confirmation toast notification
+  showToast("Search fields have been reset", "toast-success");
+}
+
+// Set placeholder and tooltip for date inputs
+function initializeDateInputs() {
+  document.querySelectorAll('.date-input, input[type="date"]').forEach(input => {
+    if (!input.placeholder) {
+      input.setAttribute('placeholder', 'DD.MM.YYYY');
+    }
+    
+    if (!input.title) {
+      input.setAttribute('title', 'Enter date in DD.MM.YYYY format (e.g., 15.03.2023)');
+    }
+  });
+  
+  // Connect birth date search to dedicated date search field
+  const birthDateField = document.getElementById("searchBirthDate");
+  const dateSearchField = document.getElementById("search-date");
+  
+  if (birthDateField && dateSearchField) {
+    // Two-way binding between the fields
+    birthDateField.addEventListener('input', function() {
+      dateSearchField.value = this.value;
+    });
+  }
+}
+
+      // Function to log failed disable attempts for customers with active loans
+      function logDisableAttempt(customerId, customerName, bookTitle) {
+        fetch("/api/log_disable_attempt", {  // Consistent path structure
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            customer_id: customerId,
+            customer_name: customerName,
+            book_title: bookTitle,
+            timestamp: new Date().toISOString(),
+          }),
+        }).catch((error) => {
+          console.error("Error logging disable attempt:", error);
+        });
+      }
+
+      // Function to display standardized toast notifications
+      function showToast(message, className) {
+        Toastify({
+          text: message,
+          duration: 5000,
+          close: true,
+          gravity: "top",
+          position: "center",
+          className: className,
+          stopOnFocus: true
+        }).showToast();
+      }
+
+      // Toggle customer status (enable / disable)
+      function toggleCustomerStatus(id, action, buttonElement) {
+        const button = buttonElement;
+        const newStatus = action === "disable" ? false : true;
+
+        if (!button) {
+          console.error("Button element not found");
+          return;
+        }
+
+        if (action === "disable") {
+          // Disable button and show checking status
+          button.disabled = true;
+          button.innerHTML =
+            '<span class="spinner-border spinner-border-sm"></span> Checking...';
+
+          // Check for active loans in the LOANS table
+          fetch(`/api/loans?cust_id=${id}`)  // Consistent path structure
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(
+                  `API request failed with status ${response.status}`
+                );
+              }
+              return response.json();
+            })
+            .then((data) => {
+              console.log("Loans data:", data);
+
+              // Check if loans exists in the response and has entries
+              const loans = data.loans || [];
+
+              if (loans.length > 0) {
+                // Get customer name from the first loan
+                const customerName = loans[0].customer_name || "Customer";
+
+                if (loans.length === 1) {
+                  // Case: Customer is borrowing only one book
+                  const bookTitle = loans[0].book_title || "a book";
+                  showToast(
+                    `Customer ${customerName} is borrowing: ${bookTitle}`,
+                    "toast-error"
+                  );
+                } else {
+                  // Case: Customer is borrowing multiple books
+                  showToast(
+                    `Customer ${customerName} is borrowing ${loans.length} books`,
+                    "toast-error"
+                  );
+                }
+
+                try {
+                  // Log the failed disable attempt to the server
+                  logDisableAttempt(
+                    id,
+                    customerName,
+                    loans.length > 1
+                      ? `${loans.length} books`
+                      : loans[0].book_title
+                  );
+                } catch (err) {
+                  console.error("Error in logDisableAttempt:", err);
+                }
+
+                // Reset button state
+                button.disabled = false;
+                button.innerHTML = "Disable";
+                return; // Don't proceed with the status update
+              } else {
+                // No active loans -- proceed with disabling
+                updateCustomerStatus(id, newStatus, button, action);
+              }
+            })
+            .catch((error) => {
+              console.error("Error checking loans:", error);
+              showToast(
+                "Error checking customer loans: " + error.message,
+                "toast-error"
+              );
+              button.disabled = false;
+              button.innerHTML = "Disable";
+            });
+        } else {
+          // For enabling, just update the status
+          updateCustomerStatus(id, newStatus, button, action);
+        }
+      }
+
+      // Function to update customer status
+      function updateCustomerStatus(id, newStatus, button, action) {
+        button.disabled = true;
+        button.innerHTML =
+          '<span class="spinner-border spinner-border-sm"></span> Processing...';
+
+        fetch(`/api/customers/${id}`, {  // Consistent path structure
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache",
+          },
+          body: JSON.stringify({ is_active: newStatus }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              return response.json().then((data) => {
+                throw new Error(
+                  data.message || `HTTP error ${response.status}`
+                );
+              });
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (!data.success) {
+              throw new Error(
+                data.message || "Failed to update customer status"
+              );
+            }
+
+            const newAction = action === "disable" ? "enable" : "disable";
+            button.textContent = action === "disable" ? "Enable" : "Disable";
+            button.className = `btn ${
+              action === "disable" ? "btn-enable" : "btn-disable"
+            }`;
+
+            button.onclick = function () {
+              toggleCustomerStatus(id, newAction, this);
+            };
+
+            showToast("Customer status updated successfully", "toast-success");
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            button.textContent = action === "enable" ? "Enable" : "Disable";
+            showToast(error.message, "toast-error");
+          })
+          .finally(() => {
+            button.disabled = false;
+          });
+      }
+
+      // Table search with improved date handling
+      function searchTable() {
+        const searchId = document
+          .getElementById("searchId")
+          .value.toUpperCase();
+        const searchName = document
+          .getElementById("searchName")
+          .value.toUpperCase();
+        const searchCity = document
+          .getElementById("searchCity")
+          .value.toUpperCase();
+        const searchAge = document
+          .getElementById("searchAge")
+          .value.toUpperCase();
+        const searchEmail = document
+          .getElementById("searchEmail")
+          .value.toUpperCase();
+        const searchBirthDate = document
+          .getElementById("searchBirthDate")
+          .value;
+        
+        const table = document.getElementById("customers-table-body");
+        const rows = table.getElementsByTagName("tr");
+        for (let i = 0; i < rows.length; i++) {
+          const cells = rows[i].getElementsByTagName("td");
+          const id = cells[0].textContent || cells[0].innerText;
+          const name = cells[1].textContent || cells[1].innerText;
+          const city = cells[2].textContent || cells[2].innerText;
+          const age = cells[3].textContent || cells[3].innerText;
+          const birthDate = cells[4].textContent || cells[4].innerText;
+          const email = cells[5].textContent || cells[5].innerText;
+          
+          const idMatch = id.toUpperCase().includes(searchId);
+          const nameMatch = name.toUpperCase().includes(searchName);
+          const cityMatch = city.toUpperCase().includes(searchCity);
+          const ageMatch = age.toUpperCase().includes(searchAge);
+          const birthDateMatch = !searchBirthDate || isDateMatchingSearch(searchBirthDate, birthDate);
+          const emailMatch = email.toUpperCase().includes(searchEmail);
+          
+          if (
+            idMatch &&
+            nameMatch &&
+            cityMatch &&
+            ageMatch &&
+            birthDateMatch &&
+            emailMatch
+          ) {
+            rows[i].style.display = "";
+          } else {
+            rows[i].style.display = "none";
+          }
+        }
+        
+        // Log after search completes (debounced)
+        debouncedLogSearch();
+      }
+      
+      // Function to reset all search fields
+      function resetSearchFields() {
+        // Array of search field IDs
+        const searchFields = [
+          "searchId",
+          "searchName",
+          "searchCity",
+          "searchAge",
+          "searchBirthDate",
+          "searchEmail",
+        ];
+
+        // Clear all search inputs
+        searchFields.forEach((fieldId) => {
+          document.getElementById(fieldId).value = "";
+        });
+
+        // Trigger table search to show all rows
+        searchTable();
+
+        // Show confirmation toast notification
+        showToast("Search fields have been reset", "toast-success");
+      }
+    </script>
+  </body>
+</html>

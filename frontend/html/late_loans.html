@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Late Loans</title>
+    <!-- External Bootstrap stylesheet -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* Page base styles */
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+      }
+      
+      /* Page header appearance */
+      .header {
+        padding: 10px;
+        background-color: #c2b280;
+        margin-bottom: 20px;
+      }
+      
+      /* Main title styling */
+      .header h1 {
+        font-family: 'Arial', sans-serif;
+        font-size: 2.5rem;
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+      
+      /* Main content container */
+      .content {
+        padding: 20px;
+        margin: 0 auto;
+        max-width: 100%;
+      }
+      
+      /* Table row background colors */
+      .green-light {
+        background-color: #e6f7e6;
+      }
+      
+      .green-medium {
+        background-color: #c2e9c2;
+      }
+      
+      .green-dark {
+        background-color: #a8d8a8;
+      }
+      
+      /* Book ID field appearance */
+      .book-id-input {
+        width: 100%;
+        text-align: center;
+        padding: 5px;
+        box-sizing: border-box;
+      }
+      
+      /* Date input field dimensions */
+      .loan-date-input,
+      .return-date-input {
+        width: 100%;
+        padding: 5px 2px;
+        font-size: 0.875rem;
+      }
+      
+      /* Form row spacing */
+      .form-row {
+        margin-bottom: 15px;
+      }
+      
+      /* Form label appearance */
+      .form-label {
+        font-weight: 500;
+        margin-bottom: 5px;
+      }
+      
+      /* Button layout container */
+      .search-buttons-container {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 10px;
+      }
+      
+      /* Mobile view adjustments */
+      @media (max-width: 768px) {
+        .form-row {
+          flex-direction: column;
+        }
+        
+        .col, .col-auto {
+          width: 100%;
+          margin-bottom: 10px;
+        }
+        
+        .search-buttons-container {
+          justify-content: center;
+        }
+      }
+
+      /* Text field width */
+      #customerNameSearch,
+      #bookNameSearch,
+      #authorNameSearch {
+        width: 100%;
+      }
+
+      /* Date picker icon positioning */
+      input[type="date"]::-webkit-calendar-picker-indicator {
+        margin-left: -5px;
+      }
+
+      /* Reset button dimensions */
+      #resetButton {
+        padding: 0.375rem 1.5rem;
+      }
+
+      /* Form control width */
+      .form-control {
+        width: 100%;
+      }
+
+      /* Date input field sizing */
+      .loan-date-input,
+      .return-date-input {
+        width: 100%;
+        padding: 5px 2px;
+        font-size: 0.875rem;
+      }
+
+      /* Book ID field alignment */
+      .book-id-input {
+        width: 100%;
+        text-align: center;
+      }
+
+      /* Search form table margins */
+      #searchForm .table {
+        margin-bottom: 0;
+      }
+
+      /* First header cell background */
+      #searchForm th:first-child {
+        background-color: #f8f9fa;
+      }
+
+      /* Search field cell padding */
+      #searchForm th {
+        padding: 8px;
+        vertical-align: top;
+      }
+
+      /* Date picker icon size */
+      input[type="date"]::-webkit-calendar-picker-indicator {
+        scale: 0.8;
+      }
+
+      /* Date input text alignment */
+      input[type="date"] {
+        text-align: center;
+      }
+
+      /* Calendar icon alignment */
+      input[type="date"]::-webkit-calendar-picker-indicator {
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Page header -->
+    <header class="header">
+      <div class="container">
+        <h1 class="text-center">Late Loans</h1>
+      </div>
+    </header>
+
+    <!-- Navigation menu -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav d-flex flex-wrap">
+            <li class="nav-item"><a class="btn btn-link" href="homepage.html">Homepage</a></li>
+            <li class="nav-item">
+              <a href="loan_book.html" class="btn btn-link">Loan a Book</a>
+            </li>
+            <li class="nav-item">
+              <a href="return_book.html" class="btn btn-link">Return Book</a>
+            </li>
+            <li class="nav-item">
+              <a href="loans.html" class="btn btn-link">Loans</a>
+            </li>
+            <li class="nav-item">
+              <a href="add_customer.html" class="btn btn-link">Add Customer</a>
+            </li>
+            <li class="nav-item">
+              <a href="customers_list.html" class="btn btn-link">Customers List</a>
+            </li>
+            <li class="nav-item">
+              <a href="add_book.html" class="btn btn-link">Add Book</a>
+            </li>
+            <li class="nav-item">
+              <a href="books_list.html" class="btn btn-link">Books List</a>
+            </li>
+            <li class="nav-item">
+              <a href="remove_book.html" class="btn btn-link">Remove Book</a>
+            </li>
+           
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main content area -->
+    <main class="content">
+      <div class="container-fluid">
+        <!-- Search form with table alignment -->
+        <form id="searchForm" class="mb-3">
+          <!-- Table-based search fields -->
+          <table class="table table-bordered mb-0">
+            <thead>
+              <tr>
+                <!-- Empty column for numbering alignment -->
+                <th style="width: 5%;">&nbsp;</th>
+                
+                <!-- Customer Name search field -->
+                <th style="width: 18%;">
+                  <label for="customerNameSearch" class="form-label mb-2">Customer Name</label>
+                  <input type="text" class="form-control form-control-sm" id="customerNameSearch" />
+                </th>
+                
+                <!-- Book Title search field -->
+                <th style="width: 18%;">
+                  <label for="bookNameSearch" class="form-label mb-2">Book Title</label>
+                  <input type="text" class="form-control form-control-sm" id="bookNameSearch" />
+                </th>
+                
+                <!-- Author search field -->
+                <th style="width: 16%;">
+                  <label for="authorNameSearch" class="form-label mb-2">Author</label>
+                  <input type="text" class="form-control form-control-sm" id="authorNameSearch" />
+                </th>
+                
+                <!-- Loan Date search field -->
+                <th style="width: 15%;">
+                  <label for="loanDateSearch" class="form-label mb-2">Loan Date</label>
+                  <input 
+                    type="text" 
+                    class="form-control form-control-sm loan-date-input" 
+                    id="loanDateSearch" 
+                    placeholder="DD.MM.YYYY"
+                  />
+                </th>
+                
+                <!-- Due Date search field -->
+                <th style="width: 15%;">
+                  <label for="returnDateSearch" class="form-label mb-2">Due Date</label>
+                  <input 
+                    type="text" 
+                    class="form-control form-control-sm return-date-input" 
+                    id="returnDateSearch" 
+                    placeholder="DD.MM.YYYY"
+                  />
+                </th>
+                
+                <!-- Book ID search field -->
+                <th style="width: 13%;">
+                  <label for="bookIdSearch" class="form-label mb-2">Book ID</label>
+                  <input type="text" class="form-control form-control-sm book-id-input" id="bookIdSearch" />
+                </th>
+              </tr>
+            </thead>
+          </table>
+          
+          <!-- Reset button container -->
+          <div class="text-end mt-2">
+            <button type="reset" class="btn btn-success" id="resetButton">Reset</button>
+          </div>
+        </form>
+
+        <!-- Results display table -->
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th style="width: 5%;" scope="col">#</th>
+              <th style="width: 18%;" scope="col">Customer Name</th>
+              <th style="width: 18%;" scope="col">Book Title</th>
+              <th style="width: 16%;" scope="col">Author</th>
+              <th style="width: 15%;" scope="col">Loan Date</th>
+              <th style="width: 15%;" scope="col">Due Date</th>
+              <th style="width: 13%;" scope="col">Book ID</th>
+            </tr>
+          </thead>
+          <tbody id="book-list"></tbody>
+        </table>
+      </div>
+    </main>
+
+    <!-- Bootstrap JavaScript bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+      // Date formatter function
+      function formatDate(dateString) {
+        if (!dateString) return "N/A";
+        const d = new Date(dateString);
+        if (isNaN(d)) return dateString;
+        const day = d.getDate().toString().padStart(2, "0");
+        const month = (d.getMonth() + 1).toString().padStart(2, "0");
+        const year = d.getFullYear();
+        return `${day}.${month}.${year}`;
+      }
+
+      // Functions for formatting and parsing date input values
+
+      // Parse dates for API requests with support for partial searches
+      function parseDateInput(dateString) {
+        if (!dateString) return "";
+        
+        // Clean input - remove unwanted characters
+        const cleanInput = dateString.replace(/[^\d.]/g, '');
+        
+        // Check for DD.MM.YYYY format
+        const dateParts = cleanInput.split('.');
+        if (dateParts.length === 3) {
+          // Only process if we have all three parts
+          if (dateParts[2].length === 4) {
+            const day = parseInt(dateParts[0], 10);
+            const month = parseInt(dateParts[1], 10);
+            const year = parseInt(dateParts[2], 10);
+            
+            if (day > 0 && day <= 31 && month > 0 && month <= 12 && year > 1900) {
+              // Format for API: YYYY-MM-DD
+              return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+            }
+          }
+        }
+        
+        // For partial searches, return the cleaned input for client-side filtering
+        return "";
+      }
+
+      // Updated formatDateInput function that handles backspace correctly
+      function formatDateInput(input) {
+        // Store cursor position
+        const start = input.selectionStart;
+        const end = input.selectionEnd;
+        let value = input.value;
+        const previousValue = value;
+        
+        // Remove any non-digit characters except dots
+        value = value.replace(/[^\d.]/g, '');
+        
+        // Auto-add dots after day and month
+        if (value.length === 2 && !value.includes('.')) {
+          value += '.';
+        } else if (value.length === 5 && value.charAt(2) === '.' && !value.substring(3).includes('.')) {
+          value += '.';
+        }
+        
+        // Limit to 10 characters (DD.MM.YYYY)
+        if (value.length > 10) {
+          value = value.substring(0, 10);
+        }
+        
+        // Handle backspace/delete at dot positions
+        if (previousValue.length > value.length) {
+          // If the cursor is positioned right after a dot, remove the dot too
+          if ((start === 3 && previousValue.charAt(2) === '.') || 
+              (start === 6 && previousValue.charAt(5) === '.')) {
+            value = value.substring(0, start - 2) + value.substring(start - 1);
+          }
+        }
+        
+        // Update the input value
+        input.value = value;
+        
+        // Restore cursor position, adjusting for added dots
+        if (start === 2 && value.charAt(2) === '.' && previousValue.charAt(2) !== '.') {
+          // Cursor was at position 2 and a dot was added, move cursor after the dot
+          input.selectionStart = input.selectionEnd = 3;
+        } else if (start === 5 && value.charAt(5) === '.' && previousValue.charAt(5) !== '.') {
+          // Cursor was at position 5 and a dot was added, move cursor after the dot
+          input.selectionStart = input.selectionEnd = 6;
+        } else {
+          // Keep cursor in a sensible position
+          input.selectionStart = input.selectionEnd = Math.min(start, value.length);
+        }
+      }
+
+      //Function for partial date matching
+      function matchesPartialDate(fullDate, partialSearch) {
+        if (!fullDate || !partialSearch) return false;
+        
+        // Format the full date as DD.MM.YYYY
+        const dateObj = new Date(fullDate);
+        if (isNaN(dateObj)) return false;
+        
+        const day = dateObj.getDate().toString().padStart(2, "0");
+        const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
+        const year = dateObj.getFullYear().toString();
+        
+        const formattedDate = `${day}.${month}.${year}`;
+        
+        // Clean up the partial search input
+        const cleanSearch = partialSearch.replace(/[^\d.]/g, '');
+        
+        // Match different parts of the date
+        const dateParts = cleanSearch.split('.');
+        
+        // Day only (1 or 2 digits)
+        if (dateParts.length === 1 && dateParts[0].length <= 2) {
+          return day.startsWith(dateParts[0]);
+        }
+        
+        // Day.Month (partial or complete)
+        if (dateParts.length === 2) {
+          const dayMatch = day.startsWith(dateParts[0]);
+          const monthMatch = month.startsWith(dateParts[1]);
+          return dayMatch && monthMatch;
+        }
+        
+        // Day.Month.Year (partial or complete)
+        if (dateParts.length === 3) {
+          const dayMatch = day.startsWith(dateParts[0]);
+          const monthMatch = month.startsWith(dateParts[1]);
+          const yearMatch = year.startsWith(dateParts[2]);
+          return dayMatch && monthMatch && yearMatch;
+        }
+        
+        // Simple contains check as fallback
+        return formattedDate.includes(cleanSearch);
+      }
+
+      // Modify the fetchSearchResults function to use the new matching function
+      function fetchSearchResults() {
+        // Get search criteria values
+        const customerName = document.getElementById("customerNameSearch").value;
+        const bookName = document.getElementById("bookNameSearch").value;
+        const authorName = document.getElementById("authorNameSearch").value;
+        const loanDateInput = document.getElementById("loanDateSearch").value;
+        const returnDateInput = document.getElementById("returnDateSearch").value;
+        const bookId = document.getElementById("bookIdSearch").value;
+
+        // Parse dates to API format for exact matches
+        const loanDate = parseDateInput(loanDateInput);
+        const returnDate = parseDateInput(returnDateInput);
+
+        // API request preparation
+        const baseUrl = "/api/late_loans";
+        const params = new URLSearchParams();
+        if (customerName) params.append("customer_name", customerName);
+        if (bookName) params.append("book_name", bookName);
+        if (authorName) params.append("author_name", authorName);
+        
+        // Only add exact date parameters when we have full valid dates
+        if (loanDate) params.append("loan_date", loanDate);
+        if (returnDate) params.append("return_date", returnDate);
+
+        // Data retrieval
+        fetch(`${baseUrl}?${params.toString()}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            // Store all loans for reference
+            window.allLoans = data;
+            
+            // Apply client-side filtering for partial matches
+            let filteredData = data;
+            
+            // Book ID filtering
+            if (bookId) {
+              filteredData = filteredData.filter(loan =>
+                loan.book_id.toString().includes(bookId)
+              );
+            }
+            
+            // Partial date filtering for loan date
+            if (loanDateInput && !loanDate) {
+              filteredData = filteredData.filter(loan => 
+                matchesPartialDate(loan.loan_date, loanDateInput)
+              );
+            }
+            
+            // Partial date filtering for return date
+            if (returnDateInput && !returnDate) {
+              filteredData = filteredData.filter(loan => 
+                matchesPartialDate(loan.return_date, returnDateInput)
+              );
+            }
+
+            // Data sorting logic
+            if (Array.isArray(filteredData)) {
+              filteredData.sort((a, b) => {
+                // Loan date comparison
+                const loanDateA = new Date(a.loan_date || '9999-12-31');
+                const loanDateB = new Date(b.loan_date || '9999-12-31');
+                
+                if (loanDateA.getTime() !== loanDateB.getTime()) {
+                  return loanDateA - loanDateB; // Primary sort criterion
+                }
+                
+                // Return date comparison
+                const returnDateA = new Date(a.return_date || '9999-12-31');
+                const returnDateB = new Date(b.return_date || '9999-12-31');
+                return returnDateA - returnDateB; // Secondary sort criterion
+              });
+            }
+
+            const bookList = document.getElementById("book-list");
+            bookList.innerHTML = "";
+
+            // Populate table with results
+            if (Array.isArray(filteredData)) {
+              filteredData.forEach((loan, index) => {
+                const row = document.createElement("tr");
+
+                // Apply row background colors
+                if (index % 3 === 0) {
+                  row.classList.add("green-light");
+                } else if (index % 3 === 1) {
+                  row.classList.add("green-medium");
+                } else {
+                  row.classList.add("green-dark");
+                }
+
+                // Create table row with loan data
+                row.innerHTML = `
+                  <td>${index + 1}</td>
+                  <td>${loan.customer_name}</td>
+                  <td>${loan.book_name}</td>
+                  <td>${loan.book_author}</td>
+                  <td>${formatDate(loan.loan_date)}</td>
+                  <td>${formatDate(loan.return_date)}</td>
+                  <td>${loan.book_id}</td>
+                `;
+                bookList.appendChild(row);
+              });
+            }
+            
+            // Log the search results after rendering
+            debouncedLogSearch();
+          })
+          .catch(error => {
+            console.error("Error fetching data:", error);
+            const bookList = document.getElementById("book-list");
+            bookList.innerHTML = `
+              <tr>
+                <td colspan="7" class="text-center text-danger">
+                  <h5>Data loading error</h5>
+                  <p>${error.message}</p>
+                  <button class="btn btn-sm btn-primary mt-2" onclick="fetchSearchResults()">Try Again</button>
+                </td>
+              </tr>
+            `;
+            
+            // Also log when there's an error
+            debouncedLogSearch();
+          });
+      }
+
+      // Search optimization function
+      function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+
+      // Function for logging search operations and tracking date inputs
+      function logSearchOperation() {
+        // Get search field values
+        const customerName = document.getElementById("customerNameSearch").value.trim();
+        const bookName = document.getElementById("bookNameSearch").value.trim();
+        const authorName = document.getElementById("authorNameSearch").value.trim();
+        const loanDate = document.getElementById("loanDateSearch").value.trim();
+        const returnDate = document.getElementById("returnDateSearch").value.trim();
+        const bookId = document.getElementById("bookIdSearch").value.trim();
+        
+        // Count visible results
+        const tableBody = document.getElementById("book-list");
+        const rows = tableBody.getElementsByTagName("tr");
+        
+        // Count visible rows
+        let visibleCount = 0;
+        const noResultsFound = rows.length === 1 && 
+                               rows[0].cells && 
+                               rows[0].cells.length === 1 && 
+                               rows[0].cells[0].textContent.includes("Data loading error");
+        
+        if (!noResultsFound) {
+          visibleCount = rows.length;
+        }
+        
+        // Build search criteria object
+        const searchParams = {};
+        if (customerName) searchParams.customer = customerName;
+        if (bookName) searchParams.title = bookName;
+        if (authorName) searchParams.author = authorName;
+        if (loanDate) searchParams.loanDate = loanDate;
+        if (returnDate) searchParams.dueDate = returnDate;
+        if (bookId) searchParams.bookId = bookId;
+        
+        // Log search with criteria and results
+        fetch('/api/log_search', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            pageType: 'late_loans',
+            searchParams: searchParams,
+            resultCount: visibleCount,
+            totalRecords: window.allLoans ? window.allLoans.length : 0
+          })
+        }).catch(err => console.error('Error logging search:', err));
+      }
+
+      // Create a debounced version of the log function
+      const debouncedLogSearch = debounce(function() {
+        logSearchOperation();
+      }, 800);
+
+      // Function for logging when users enter partial date values
+      function logDateInput(inputElement) {
+        const inputId = inputElement.id;
+        const inputValue = inputElement.value;
+        const fieldType = inputId === "loanDateSearch" ? "loan_date" : "return_date";
+        
+        // Only log if there's actual content
+        if (inputValue.trim()) {
+          // Log the date input action with details
+          fetch('/api/log_action', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              action_type: "date_input",
+              page: "late_loans.html",
+              details: {
+                field: fieldType,
+                value: inputValue,
+                is_partial: inputValue.length < 10 || !inputValue.match(/\d{2}\.\d{2}\.\d{4}/)
+              }
+            })
+          }).catch(err => console.error('Error logging date input:', err));
+        }
+      }
+
+      // Enhanced formatDateInput function with logging capabilities
+      const originalFormatDateInput = formatDateInput;
+      formatDateInput = function(input) {
+        // Store original value for comparison
+        const originalValue = input.value;
+        
+        // Call the original function
+        originalFormatDateInput(input);
+        
+        // If the value changed and it's not empty, log it
+        if (input.value !== originalValue && input.value.trim()) {
+          // Debounce the logging to avoid too many requests
+          debounce(function() {
+            logDateInput(input);
+          }, 500)();
+          
+          // Also trigger search results logging after a longer delay
+          setTimeout(debouncedLogSearch, 1000);
+        }
+      };
+
+      // Page initialization
+      document.addEventListener("DOMContentLoaded", function () {
+        // Initial data loading
+        fetchSearchResults();
+
+        // Performance-optimized search handling
+        const debouncedSearch = debounce(fetchSearchResults, 300);
+
+        // Search field identifiers
+        const searchFields = [
+          "customerNameSearch",
+          "bookNameSearch",
+          "authorNameSearch",
+          "loanDateSearch",
+          "returnDateSearch",
+          "bookIdSearch"
+        ];
+
+        // Real-time search event handlers
+        searchFields.forEach(id => {
+          document.getElementById(id).addEventListener("input", debouncedSearch);
+        });
+
+        // Reset functionality
+        document.getElementById("resetButton").addEventListener("click", function () {
+          // Form reset handling
+          setTimeout(fetchSearchResults, 100);
+        });
+
+        // Auto-format date inputs
+        document.getElementById("loanDateSearch").addEventListener("input", function() {
+          formatDateInput(this);
+        });
+        
+        document.getElementById("returnDateSearch").addEventListener("input", function() {
+          formatDateInput(this);
+        });
+        
+        // Special event handling for backspace and delete keys in date fields
+        document.getElementById("loanDateSearch").addEventListener("keydown", function(e) {
+          if (e.key === "Backspace" || e.key === "Delete") {
+            const pos = this.selectionStart;
+            const value = this.value;
+            
+           // Logic for cursor movement when deleting dots in date fields
+            if (e.key === "Backspace" && (pos === 3 || 6) && value.charAt(pos-1) === '.') {
+              e.preventDefault();
+              // Remove the dot and the character before it
+              this.value = value.substring(0, pos-2) + value.substring(pos);
+              this.selectionStart = this.selectionEnd = pos-2;
+            }
+            
+            // Logic for cursor movement when using delete key at dot positions
+            if (e.key === "Delete" && (pos === 2 || 5) && value.charAt(pos) === '.') {
+              e.preventDefault();
+              // Remove the dot and the character after it
+              this.value = value.substring(0, pos) + value.substring(pos+2);
+              this.selectionStart = this.selectionEnd = pos;
+            }
+          }
+        });
+
+        document.getElementById("returnDateSearch").addEventListener("keydown", function(e) {
+          if (e.key === "Backspace" || e.key === "Delete") {
+            const pos = this.selectionStart;
+            const value = this.value;
+            
+            // Handle deleting across a dot (positions 3 or 6)
+            if (e.key === "Backspace" && (pos === 3 || 6) && value.charAt(pos-1) === '.') {
+              e.preventDefault();
+              // Remove the dot and the character before it
+              this.value = value.substring(0, pos-2) + value.substring(pos);
+              this.selectionStart = this.selectionEnd = pos-2;
+            }
+            
+            // Handle delete key at a dot (positions 2 or 5)
+            if (e.key === "Delete" && (pos === 2 || 5) && value.charAt(pos) === '.') {
+              e.preventDefault();
+              // Remove the dot and the character after it
+              this.value = value.substring(0, pos) + value.substring(pos+2);
+              this.selectionStart = this.selectionEnd = pos;
+            }
+          }
+        });
+        
+        // Log book ID searches
+        document.getElementById("bookIdSearch").addEventListener("input", debounce(function() {
+          const bookId = this.value.trim();
+          if (bookId) {
+            console.log(`Searching for Book ID: ${bookId}`);
+            // Could make an API call to log this server-side
+            fetch(`/api/log_search?type=book_id&value=${bookId}`, {
+              method: "GET"
+            }).catch(error => {
+              console.error("Error logging search:", error);
+            });
+          }
+        }, 500));
+
+        // Add date input logging for both date fields
+        document.getElementById("loanDateSearch").addEventListener("input", function() {
+          // The modified formatDateInput function will handle logging
+        });
+        
+        document.getElementById("returnDateSearch").addEventListener("input", function() {
+          // The modified formatDateInput function will handle logging
+        });
+        
+        // Event listener for reset button with logging functionality
+        document.getElementById("resetButton").addEventListener("click", function() {
+          // Log the reset action
+          fetch('/api/log_action', {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action_type: "reset_search",
+              page: "late_loans.html",
+              details: {}
+            })
+          });
+          
+          // After form reset, log empty search
+          setTimeout(debouncedLogSearch, 200);
+        });
+      });
+
+      // Function to format the date separators
+      function formatDateWithBoldDots(input) {
+        // Get current value and cursor position
+        const value = input.value;
+        const start = input.selectionStart;
+        const end = input.selectionEnd;
+        
+        if (!value) return;
+        
+        // Create a temporary div to hold the formatted content
+        const formattedContainer = document.createElement('div');
+        formattedContainer.style.position = 'absolute';
+        formattedContainer.style.top = '-9999px';
+        formattedContainer.style.left = '-9999px';
+        document.body.appendChild(formattedContainer);
+        
+        // Split the input by dots
+        const parts = value.split('.');
+        const formattedHTML = parts.join('<span class="date-dot">.</span>');
+        
+        // Replace the input with a styled span
+        const inputRect = input.getBoundingClientRect();
+        
+        // Create an overlay for the dots
+        const overlay = document.createElement('div');
+        overlay.className = 'date-overlay';
+        overlay.innerHTML = formattedHTML;
+        overlay.style.position = 'absolute';
+        overlay.style.left = `${inputRect.left}px`;
+        overlay.style.top = `${inputRect.top}px`;
+        overlay.style.width = `${inputRect.width}px`;
+        overlay.style.height = `${inputRect.height}px`;
+        overlay.style.pointerEvents = 'none';
+        overlay.style.fontFamily = getComputedStyle(input).fontFamily;
+        overlay.style.fontSize = getComputedStyle(input).fontSize;
+        overlay.style.padding = getComputedStyle(input).padding;
+        
+        // Clean up temporary elements
+        document.body.removeChild(formattedContainer);
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Library Homepage</title>
+    <!-- Bootstrap 5.3 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+    <!-- Toastify CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+      rel="stylesheet"
+    />
+    <!-- FontAwesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <!-- Styles for page layout, cards, responsiveness and form elements -->
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        overflow-x: hidden;
+        background-color: #f5f5dc;
+      }
+
+      /* Main container layout */
+      .page-container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .content-wrapper {
+        flex: 1;
+      }
+
+      /* Header styling */
+      .header {
+        padding: 10px;
+        background-color: #c2b280;
+        margin-bottom: 10px;
+      }
+
+      /* Main content area */
+      .container {
+        padding: 0 15px;
+      }
+
+      /* Cards with consistent height */
+      .card {
+        height: 300px !important;
+        margin: 8px;
+        padding: 12px !important;
+        background-color: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        position: relative !important;
+      }
+
+      /* Card body layout */
+      .card-body {
+        padding: 8px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        height: 100% !important;
+      }
+
+      /* Icon styling */
+      .icon {
+        width: 50px !important;
+        height: 50px !important;
+        margin: 5px auto 10px !important;
+        object-fit: contain !important;
+      }
+
+      /* Card title styling */
+      .card-title {
+        margin: 0 0 5px !important;
+        font-weight: bold !important;
+        text-align: center !important;
+      }
+
+      /* Card text styling */
+      .card-text {
+        text-align: center !important;
+        margin: 0 0 10px !important;
+        height: 50px !important;
+        overflow: hidden !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+
+      /* Button container positioning */
+      .button-container {
+        position: absolute !important;
+        bottom: 15px !important;
+        left: 0 !important;
+        right: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        width: 100% !important;
+      }
+
+      /* Primary button styling */
+      .btn-primary {
+        height: 40px !important;
+        width: 60% !important;
+        margin: 0 auto 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+
+      /* Danger button styling */
+      .btn-danger {
+        height: 35px !important;
+        width: 35% !important;
+        margin: 0 auto !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 0.8rem !important;
+        background-color: #663d3d !important;
+        border-color: #ff5252 !important;
+      }
+
+      .btn-danger:hover {
+        background-color: #4b1515 !important;
+        border-color: #ff4040 !important;
+      }
+
+      /* Footer styling */
+      .footer-image-wrapper {
+        background-color: #e0d8c3;
+        overflow: hidden;
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+      }
+
+      /* Responsive image that fits without scrolling */
+      .footer-image {
+        width: 100%;
+        height: auto;
+        max-height: calc(100vh - 450px); /* Adjust based on content above */
+        object-fit: cover;
+        display: block;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 992px) {
+        .col-md-3 {
+          flex: 0 0 50%;
+          max-width: 50%;
+        }
+        .footer-image {
+          max-height: calc(100vh - 800px);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .col-md-3 {
+          flex: 0 0 100%;
+          max-width: 100%;
+        }
+        .card {
+          height: 250px !important;
+        }
+        .footer-image {
+          max-height: 200px;
+        }
+      }
+
+      /* Toggle button styling */
+      .toggle-btn {
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-left: none;
+        border-radius: 0 5px 5px 0;
+        padding: 0.375rem 0.75rem;
+        color: #000;
+      }
+
+      .toggle-btn i {
+        font-size: 18px;
+      }
+
+      .input-group .form-control {
+        border-right: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Wrap your content in a page container -->
+    <div class="page-container">
+      <div class="content-wrapper">
+        <!-- Page header with welcome message -->
+        <header class="header">
+          <div class="container">
+            <h1 class="text-center">Welcome to the Library Homepage!</h1>
+          </div>
+        </header>
+
+        <!-- Card grid displaying main navigation options -->
+       
+        <div class="container">
+          <div class="row">
+            <!-- Card 1: Librarians -->
+            <div class="col-md-3">
+              <div class="card text-center">
+                <div class="card-body">
+                  <img
+                    src="https://cdn-icons-png.flaticon.com/512/3749/3749883.png"
+                    alt="Librarian Icon"
+                    class="icon"
+                  />
+                  <h5 class="card-title">Librarians</h5>
+                  <p class="card-text">Manage the library's inventory and users.</p>
+                  <!-- Button container for vertical alignment -->
+                  <div class="button-container">
+                    <!-- Opens the Librarians modal -->
+                    <button class="btn btn-primary" onclick="openLogin()">
+                      Enter
+                    </button>
+                
+                    <button class="btn btn-danger" onclick="handleLogout()">
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2: Customers -->
+            <div class="col-md-3">
+              <div class="card text-center">
+                <div class="card-body">
+                  <img
+                    src="https://cdn-icons-png.flaticon.com/512/6779/6779694.png"
+                    alt="Customers Icon"
+                    class="icon"
+                  />
+                  <h5 class="card-title">Customers</h5>
+                  <p class="card-text">
+                    Manage customer info, books, renewals, and more.
+                  </p>
+                  <!-- Button container for vertical alignment -->
+                  <div class="button-container">
+                    <!-- Opens the Customers modal -->
+                    <button class="btn btn-primary" onclick="openCustomerModal()">
+                      Enter
+                    </button>
+                  
+                    <button class="btn btn-danger" onclick="handleLogout()">
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3: About -->
+            <div class="col-md-3">
+              <div class="card text-center">
+                <div class="card-body">
+                  <img
+                    src="https://cdn-icons-png.flaticon.com/512/3549/3549958.png"
+                    alt="About Icon"
+                    class="icon"
+                  />
+                  <h5 class="card-title">About</h5>
+                  <p class="card-text">Learn more about the library.</p>
+                  <!-- Button container for vertical alignment -->
+                  <div class="button-container">
+                    <button
+                      class="btn btn-primary"
+                      onclick="window.location.href='/frontend/html/about.html'"
+                    >
+                      Enter
+                    </button>
+               
+                    <button class="btn btn-danger" onclick="handleLogout()">
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 4: Developers -->
+            <div class="col-md-3">
+              <div class="card text-center">
+                <div class="card-body">
+                  <img
+                    src="https://banner2.cleanpng.com/20240130/cgz/transparent-developer-icon-woman-using-laptop-to-access-website-simple-1710891553967.webp"
+                    alt="Developer Icon"
+                    class="icon"
+                  />
+                  <h5 class="card-title">Developers</h5>
+                  <p class="card-text">Access developer resources.</p>
+                  <!-- Button container for vertical alignment -->
+                  <div class="button-container">
+                    <!-- Button to open developer login modal -->
+                    <button class="btn btn-primary" onclick="openDeveloperLogin()">
+                      Enter
+                    </button>
+                
+                    <button class="btn btn-danger" onclick="handleLogout()">
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+       
+
+      <!-- Footer with responsive image -->
+      <footer class="footer-image-wrapper">
+        <img
+          src="https://i1.pickpik.com/photos/762/797/183/books-students-library-university-preview.jpg"
+          alt="Library Footer"
+          class="footer-image"
+        />
+      </footer>
+    </div>
+
+    <!-- Modal for Librarian Login -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="loginModalLabel">Login</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="loginForm">
+              <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="username"
+                  placeholder="Enter username"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <!-- Styling with input-group and adding eye button -->
+                <div class="input-group">
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    placeholder="Enter password"
+                  />
+                  <button
+                    class="btn toggle-btn"
+                    type="button"
+                    onclick="togglePassword('password', this)"
+                  >
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Login</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Librarians Modal with uniform links  -->
+    <div
+      class="modal fade"
+      id="librariansModal"
+      tabindex="-1"
+      aria-labelledby="librariansModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="librariansModalLabel">Librarians</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <!-- Headings in one row -->
+          <div class="modal-body pb-0 d-flex gap-4">
+            <h3 class="m-0">Customer Management</h3>
+            <h3 class="m-0">Book Management</h3>
+          </div>
+
+          <!-- List content in two columns -->
+          <div class="modal-body d-flex gap-4">
+            <!-- Column 1: Customer Management  -->
+            <div class="flex-fill">
+              <ul class="list-unstyled">
+                <li>
+                  <a
+                    href="loan_book.html"
+                    class="btn btn-link protected-link"
+                    >Loan a Book</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="return_book.html"
+                    class="btn btn-link protected-link"
+                    >Return Book</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="loans.html"
+                    class="btn btn-link protected-link"
+                    >Loans</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="add_customer.html"
+                    class="btn btn-link protected-link"
+                    >Add Customer</a
+                  >
+                </li>
+                <li>
+                  <a href="customers_list.html" class="btn btn-link protected-link"
+                    >Customers List</a
+                  >
+                </li>
+              </ul>
+            </div>
+
+            <!-- Column 2: Book Management   -->
+            <div class="flex-fill">
+              <ul class="list-unstyled">
+                <li>
+                  <a
+                    href="add_book.html"
+                    class="btn btn-link protected-link"
+                    >Add Book</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="books_list.html"
+                    class="btn btn-link protected-link"
+                    >Books List</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="remove_book.html"
+                    class="btn btn-link protected-link"
+                    >Remove Book</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="late_loans.html"
+                    class="btn btn-link protected-link"
+                    >Late Loans</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="../user_pages/recommended_books.html"
+                    class="btn btn-link protected-link"
+                    >Recommended Books</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customers Modal (with links)   -->
+    <div
+      class="modal fade"
+      id="customersModal"
+      tabindex="-1"
+      aria-labelledby="customersModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- Modal header + close -->
+          <div class="modal-header">
+            <h5 class="modal-title" id="customersModalLabel">Customers</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <!-- Modal content -->
+          <div class="modal-body d-flex justify-content-between">
+            <div>
+              <!-- Left Column: Customer Options   -->
+              <h3>Customer Options</h3>
+              <ul class="list-unstyled">
+                <li>
+                  <a
+                    href="my_loans.html"
+                    class="btn btn-link protected-link"
+                    >My Loans</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="reserve_book.html"
+                    class="btn btn-link protected-link"
+                    >Reserve a Book</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="account_settings.html"
+                    class="btn btn-link protected-link"
+                    >Account Settings</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <div>
+              <!-- Right Column: Library Information   -->
+              <h3>Library Info</h3>
+              <ul class="list-unstyled">
+                <li>
+                  <a
+                    href="books_list.html"
+                    class="btn btn-link protected-link"
+                    >Books List</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="library_events.html"
+                    class="btn btn-link protected-link"
+                    >Library Events</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="contact_us.html"
+                    class="btn btn-link protected-link"
+                    >Contact Us</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for Customer Login -->
+    <div
+      class="modal fade"
+      id="customerLoginModal"
+      tabindex="-1"
+      aria-labelledby="customerLoginModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <!-- Header + close -->
+          <div class="modal-header">
+            <h5 class="modal-title" id="customerLoginModalLabel">Customers Login</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <!-- Modal content -->
+          <div class="modal-body">
+            <form id="customerLoginForm">
+              <div class="mb-3">
+                <label for="customerEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="customerEmail" />
+              </div>
+              <div
+                class="mb-3"
+                id="customerPasswordGroup"
+                style="display: none"
+              >
+                <label for="customerPassword" class="form-label">Password</label>
+                <div class="input-group">
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="customerPassword"
+                    placeholder="Enter password"
+                  />
+                  <button
+                    class="btn toggle-btn"
+                    type="button"
+                    onclick="togglePassword('customerPassword', this)"
+                  >
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Login</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for Developer Login -->
+    <div
+      class="modal fade"
+      id="developerLoginModal"
+      tabindex="-1"
+      aria-labelledby="developerLoginModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="developerLoginModalLabel">
+              Developer Login
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="developerLoginForm">
+              <div class="mb-3">
+                <label for="dev-username" class="form-label">Username</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="dev-username"
+                  placeholder="Enter developer username"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="dev-password" class="form-label">Password</label>
+                <div class="input-group">
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="dev-password"
+                    placeholder="Enter developer password"
+                  />
+                  <button
+                    class="btn toggle-btn"
+                    type="button"
+                    onclick="togglePassword('dev-password', this)"
+                  >
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">
+                  Login as Developer
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Container to load protected content dynamically (for AJAX case) -->
+    <div id="content"></div>
+
+    <!-- Include Toastify, axios, jQuery, and Bootstrap JS libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+
+    <script>
+      // ============ LIBRARIAN LOGIN ============ //
+      function openLogin() {
+        const loginModal = new bootstrap.Modal(
+          document.getElementById("loginModal")
+        );
+        loginModal.show();
+      }
+
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const username = document.getElementById("username").value.trim();
+          const password = document.getElementById("password").value.trim();
+          try {
+            const response = await fetch("/api/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username, password }),
+              credentials: "include"
+            });
+            const data = await response.json();
+            if (data.success) {
+              Toastify({
+                text: "Login successful!",
+                style: { background: "linear-gradient(to right, #00b09b, #96c93d)" },
+                duration: 3000,
+              }).showToast();
+              
+              bootstrap.Modal.getInstance(
+                document.getElementById("loginModal")
+              ).hide();
+              
+              // Change the redirect path to include the correct directory
+              setTimeout(() => {
+                window.location.href = "/frontend/html/books_list.html";  // Fixed path with /frontend/html/ prefix
+              }, 1000);
+            } else {
+              Toastify({
+                text: data.message || "Login failed!",
+                style: { background: "linear-gradient(to right, #ff5f6d, #ffc371)" },
+                duration: 3000,
+              }).showToast();
+            }
+          } catch (error) {
+            console.error(error);
+            Toastify({
+              text: "An error occurred.",
+              style: { background: "linear-gradient(to right, #ff5f6d, #ffc371)" },
+              duration: 3000,
+            }).showToast();
+          }
+        });
+
+      // ============ CUSTOMERS LOGIN ============ //
+      function openCustomerModal() {
+        const customerModal = new bootstrap.Modal(
+          document.getElementById("customerLoginModal")
+        );
+        customerModal.show();
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const customerEmailInput = document.getElementById("customerEmail");
+        const customerPasswordGroup = document.getElementById(
+          "customerPasswordGroup"
+        );
+        const customerPasswordInput =
+          document.getElementById("customerPassword");
+        const customerLoginForm = document.getElementById("customerLoginForm");
+
+        // Regex to check if email is valid
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        // Hide password field by default
+        customerPasswordGroup.style.display = "none";
+
+        // When the user types an email
+        customerEmailInput.addEventListener("input", function () {
+          const emailValue = customerEmailInput.value.trim();
+          // If the email is valid, show the password field
+          if (emailRegex.test(emailValue)) {
+            customerPasswordGroup.style.display = "block";
+            customerPasswordInput.type = "password";
+            customerPasswordInput.value = "";
+          } else {
+            customerPasswordGroup.style.display = "none";
+            customerPasswordInput.value = "";
+          }
+        });
+
+        // Prevent copying/pasting of passwords
+        customerPasswordInput.addEventListener("copy", function (e) {
+          e.preventDefault();
+        });
+        customerPasswordInput.addEventListener("paste", function (e) {
+          e.preventDefault();
+        });
+
+        // Customer form submission
+        customerLoginForm.addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const email = customerEmailInput.value.trim();
+          const password = customerPasswordInput.value.trim();
+          if (!email || !password) {
+            Toastify({
+              text: "Please enter valid email and password.",
+              style: { background: "linear-gradient(to right, #ff5f6d, #ffc371)" },
+              duration: 3000,
+            }).showToast();
+            return;
+          }
+          // Send request to server
+          try {
+            const response = await fetch("/api/customer_login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, password }),
+              credentials: "include"
+            });
+            const data = await response.json();
+            console.log("Response from server:", data);
+            if (data.success) {
+              Toastify({
+                text: "Login successful! Redirecting...",
+                style: { background: "linear-gradient(to right, #00b09b, #96c93d)" },
+                duration: 3000,
+              }).showToast();
+              bootstrap.Modal.getInstance(
+                document.getElementById("customerLoginModal")
+              ).hide();
+              window.location.href = "/frontend/user_pages/customer_dashboard.html?ts=" + Date.now();
+            } else {
+              Toastify({
+                text: "Login failed: " + data.message,
+                style: { background: "linear-gradient(to right, #ff5f6d, #ffc371)" },
+                duration: 3000,
+              }).showToast();
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            Toastify({
+              text: "An error occurred during login.",
+              style: { background: "linear-gradient(to right, #ff5f6d, #ffc371)" },
+              duration: 3000,
+            }).showToast();
+          }
+        });
+      });
+
+      // ============ DEVELOPER LOGIN ============ //
+      function openDeveloperLogin() {
+        const devModal = new bootstrap.Modal(
+          document.getElementById("developerLoginModal")
+        );
+        devModal.show();
+      }
+
+      document
+        .getElementById("developerLoginForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const username = document.getElementById("dev-username").value.trim();
+          const password = document.getElementById("dev-password").value.trim();
+          try {
+            const response = await fetch("/api/developer_login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username, password }),
+              credentials: "include"
+            });
+            const data = await response.json();
+            if (response.ok && data.success) {
+              // Get the token expiration time from the response
+              const tokenDuration = data.tokenDuration || "8 hours"; // Default to 8 hours if not provided
+              
+              // Store token in localStorage for frontend access
+              if (data.token) {
+                localStorage.setItem("developer_token", data.token);
+              }
+              
+              // Store the toast message in localStorage to show it on the next page
+              localStorage.setItem("dev_login_message", `Developer login successful! Session valid for ${tokenDuration}.`);
+              
+              // Hide the modal
+              bootstrap.Modal.getInstance(
+                document.getElementById("developerLoginModal")
+              ).hide();
+              
+              // Show a toast message before redirecting
+              Toastify({
+                text: "Developer login successful! Redirecting...",
+                style: { background: "linear-gradient(to right, #00b09b, #96c93d)" },
+                duration: 3000,
+              }).showToast();
+              
+              // Clear any URL parameters that might interfere
+              const baseUrl = "/frontend/html/developers.html";
+              
+              // Redirect with a slight delay and include the dev_mode parameter
+              setTimeout(() => {
+                window.location.href = `${baseUrl}?dev_mode=true&t=${Date.now()}`;
+              }, 1000);
+            } else {
+              Toastify({
+                text: data.message || "Developer login failed!",
+                style: { background: "linear-gradient(to right, #ff5f6d, #ffc371)" },
+                duration: 9000,
+              }).showToast();
+            }
+          } catch (error) {
+            console.error("Developer login error:", error);
+            Toastify({
+              text: "An error occurred during developer login.",
+              style: { background: "linear-gradient(to right, #ff5f6d, #ffc371)" },
+              duration: 3000,
+            }).showToast();
+          }
+        });
+
+      // ============ LOADING PROTECTED LINKS (AJAX) ============ //
+      function loadFullPage(url) {
+        const token = localStorage.getItem("customer_token");
+        if (!token) {
+          showToast("Please log in to access this page.", "toast-error");
+          return;
+        }
+        
+        // Using a relative URL
+        const relativePath = url.startsWith('/') ? url : '/' + url; attributes
+        
+        // Cache-busting parameter to prevent caching issues
+        const cacheBuster = new Date().getTime();
+        const requestUrl = `${relativePath}${relativePath.includes('?') ? '&' : '?'}_=${cacheBuster}`;
+        
+        axios
+          .get(requestUrl, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          .then((response) => {
+            document.open();
+            document.write(response.data);
+            document.close();
+          })
+          .catch((error) => {
+            console.error("Error loading page:", error);
+            showToast("Error loading the requested page.", "toast-error");
+          });
+      }
+
+      // Helper function for consistent toast notifications
+      function showToast(message, className) {
+        Toastify({
+          text: message,
+          duration: 5000,
+          close: true,
+          gravity: "top",
+          position: "center",
+          className: className,
+          stopOnFocus: true
+        }).showToast();
+      }
+
+      // Set up listeners for protected links using relative paths
+      document.addEventListener("DOMContentLoaded", function() {
+        const protectedLinks = document.querySelectorAll(".protected-link");
+        protectedLinks.forEach((link) => {
+          link.addEventListener("click", function(event) {
+            event.preventDefault();
+            
+            // Get relative URL from href attribute
+            const url = link.getAttribute("href");
+            loadFullPage(url);
+          });
+        });
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Select all password input elements in the modals
+        const passwordInputs = document.querySelectorAll(
+          "input[type='password']"
+        );
+
+        passwordInputs.forEach((input) => {
+          // Prevent copying
+          input.addEventListener("copy", (e) => e.preventDefault());
+          // Prevent pasting
+          input.addEventListener("paste", (e) => e.preventDefault());
+          // Prevent cutting
+          input.addEventListener("cut", (e) => e.preventDefault());
+        });
+      });
+
+      function togglePassword(inputId, toggleBtn) {
+        const input = document.getElementById(inputId);
+        const icon = toggleBtn.querySelector("i");
+        if (input.type === "password") {
+          input.type = "text";
+          icon.classList.remove("fa-eye");
+          icon.classList.add("fa-eye-slash");
+        } else {
+          input.type = "password";
+          icon.classList.remove("fa-eye-slash");
+          icon.classList.add("fa-eye");
+        }
+      }
+
+      // Modal events for future enhancements
+      document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('shown.bs.modal', function () {
+          // Any initialization code for when modal is shown
+        });
+      });
+
+      // Function to handle logout
+      function handleLogout() {
+        // Server-side session termination via API call
+        fetch('/api/logout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ preserveDeveloperAccess: false }),
+          credentials: 'same-origin'  // Important: sends cookies with the request
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // User feedback with toast notification
+            Toastify({
+              text: "Logged out successfully",
+              duration: 3000,
+              style: {
+                background: "linear-gradient(to right, #00b09b, #96c93d)",
+              }
+            }).showToast();
+            
+            // CLIENT-SIDE CLEANUP STRATEGY:
+            
+            // 1. Selective localStorage cleanup - only removes auth-related items
+            for (const key in localStorage) {
+              if (localStorage.hasOwnProperty(key)) {
+                if (key.includes('token') || key.includes('developer') || 
+                    key.includes('auth') || key.includes('login')) {
+                  localStorage.removeItem(key);
+                }
+              }
+            }
+            
+            // Continue with the rest of your logout logic
+            sessionStorage.clear();
+            
+            // Clear cookies
+            document.cookie.split(";").forEach(function(c) {
+              const cookie = c.trim();
+              const eqPos = cookie.indexOf("=");
+              const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+              document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+            });
+            
+            // Redirect
+            setTimeout(() => {
+              window.location.href = window.location.origin + "/frontend/html/homepage.html";
+            }, 1000);
+          }
+        })
+        .catch(error => {
+          console.error('Logout error:', error);
+          // Fallback logout - clear everything and redirect anyway
+          localStorage.clear();
+          sessionStorage.clear();
+          window.location.href = window.location.origin + "/frontend/html/homepage.html";
+        });
+      }
+
+      // Check login status on page load to show/hide logout buttons
+      document.addEventListener("DOMContentLoaded", function() {
+        // Check if any token exists
+        const isLoggedIn = document.cookie.includes('access_token=') || 
+                            localStorage.getItem("customer_token") ||
+                            localStorage.getItem("librarian_token") ||
+                            localStorage.getItem("developer_token");
+        
+        // Show or hide logout buttons based on login status
+        const logoutButtons = document.querySelectorAll('.btn-danger');
+        logoutButtons.forEach(button => {
+          button.style.display = isLoggedIn ? 'flex' : 'none';
+        });
+      });
+
+      // Enhanced logout function that ensures proper cleanup of all tokens and sessions
+      function secureLogout() {
+        // Clear all authentication tokens
+        localStorage.removeItem("customer_token");
+        localStorage.removeItem("librarian_token");
+        localStorage.removeItem("developer_token");
+        
+        // Make POST request to server with proper Content-Type header
+        fetch('/api/logout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'  // Add this header
+          },
+          body: JSON.stringify({ preserveDeveloperAccess: false }), // Explicitly set to false
+          credentials: 'include'
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log("Logout successful:", data);
+          
+          // Clear all cookies
+          document.cookie.split(";").forEach(function(c) {
+            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/");
+          });
+          
+          // Show success message
+          Toastify({
+            text: "Logged out successfully",
+            duration: 3000,
+            style: {
+              background: "linear-gradient(to right, #00b09b, #96c93d)",
+            }
+          }).showToast();
+          
+          // Redirect to homepage
+          setTimeout(() => {
+            window.location.href = window.location.origin + "/frontend/html/homepage.html";
+          }, 1000);
+        })
+        .catch(error => {
+          console.error("Logout error:", error);
+          
+          // Even if server logout fails, clear client-side storage and redirect
+          localStorage.clear();
+          sessionStorage.clear();
+          
+          // Clear cookies manually
+          document.cookie.split(";").forEach(function(c) {
+            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/");
+          });
+          
+          // Redirect anyway
+          window.location.href = window.location.origin + "/frontend/html/homepage.html";
+        });
+      }
+
+      // Attach the secure logout to all logout buttons
+      document.addEventListener("DOMContentLoaded", function() {
+        const logoutButtons = document.querySelectorAll(".logout-btn, #logoutButton");
+        logoutButtons.forEach(button => {
+          button.addEventListener("click", secureLogout);
+        });
+      });
+
+      // Security check for the developers page
+      function verifyDeveloperAccess() {
+        const hasValidToken = localStorage.getItem("developer_token") !== null;
+        const hasValidSession = document.cookie.includes("access_token=");
+        
+        // Only check dev_mode parameter on developers.html page
+        if (window.location.pathname.includes("developers.html")) {
+          // Block access attempts using only URL parameters
+          const urlParams = new URLSearchParams(window.location.search);
+          const attemptingDevMode = urlParams.get("dev_mode") === "true";
+          
+          if (attemptingDevMode && !(hasValidToken || hasValidSession)) {
+            // Unauthorized access attempt - redirect to login
+            alert("Unauthorized access. Please login with proper credentials.");
+            window.location.href = "/frontend/html/homepage.html";
+            return false;
+          }
+        }
+        
+        return true;
+      }
+
+      // Execute security check when the page loads - ONLY on developers.html
+      if (window.location.pathname.includes("developers.html")) {
+        if (!verifyDeveloperAccess()) {
+          // Additional security - hide content if verification fails
+          document.body.innerHTML = "<h1>Access Denied</h1>";
+        }
+      }
+
+    </script>
+  </body>
+</html>

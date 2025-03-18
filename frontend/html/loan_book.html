@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Loan a Book</title>
+    <!-- Bootstrap 5.3 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <style>
+      body {
+        background-color: #f8f9fa;
+        padding: 20px;
+      }
+      .header {
+        padding: 10px;
+        background-color: #c2b280;
+        margin-bottom: 20px;
+      }
+      .content {
+        padding: 20px;
+      }
+      .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f5f5dc;
+      }
+      .table-striped tbody tr:nth-of-type(even) {
+        background-color: #e3e1d4;
+      }
+      .customer-details,
+      .book-details {
+        text-align: center;
+        font-size: 24px;
+        margin-top: 20px;
+        color: green;
+        font-weight: bold;
+      }
+      .loan-book-section {
+        display: none;
+      }
+      .highlight {
+        color: blue;
+        font-weight: bold;
+      }
+      .selected-book {
+        color: blue;
+        font-weight: bold;
+      }
+      a.btn.btn-link {
+        text-decoration: none;
+      }
+      /* Adjust column widths in responsive mode */
+      @media (max-width: 992px) {
+        .col {
+          width: 100% !important;
+          margin-bottom: 10px;
+        }
+        
+        #searchBookForm .row {
+          display: block;
+        }
+      }
+      
+      /* Match table layout */
+      #book-list td:nth-child(1),
+      .col:nth-child(1) {
+        width: 10%;
+      }
+      
+      #book-list td:nth-child(2),
+      .col:nth-child(2) {
+        width: 30%;
+      }
+      
+      #book-list td:nth-child(3),
+      .col:nth-child(3) {
+        width: 25%;
+      }
+      
+      #book-list td:nth-child(4),
+      .col:nth-child(4) {
+        width: 15%;
+      }
+      
+      #book-list td:nth-child(5),
+      .col:nth-child(5) {
+        width: 20%;
+      }
+
+      /* Search field styling with minimal padding between columns */
+      .mb-3.row.g-2 > .col-auto {
+        padding-left: 1px;
+        padding-right: 1px;
+      }
+
+      /* Default Bootstrap rounded corners for all form elements */
+      .form-control,
+      .form-select {
+        border-radius: 0.25rem;
+      }
+
+      /* Use border-box sizing to ensure consistent width calculations */
+      .col-auto {
+        box-sizing: border-box;
+      }
+
+      /* Ensure proper column widths with spacing between */
+      #book-list td:nth-child(1),
+      .col-auto:nth-child(1) {
+        width: calc(10% - 2px);
+      }
+
+      #book-list td:nth-child(2),
+      .col-auto:nth-child(2) {
+        width: calc(30% - 2px);
+      }
+
+      #book-list td:nth-child(3),
+      .col-auto:nth-child(3) {
+        width: calc(25% - 2px);
+      }
+
+      #book-list td:nth-child(4),
+      .col-auto:nth-child(4) {
+        width: calc(15% - 2px);
+      }
+
+      #book-list td:nth-child(5),
+      .col-auto:nth-child(5) {
+        width: calc(20% - 2px);
+      }
+
+      /* Custom styling for Toastify notifications */
+      .toastify {
+        padding: 12px 20px;
+        color: white;
+        font-size: 1rem;
+        border-radius: 6px;
+        display: inline-block;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        max-width: 320px;
+        min-width: 200px;
+        margin: 10px auto;
+        text-align: center;
+      }
+      
+      /* Success notification styling */
+      .toast-success {
+        background: linear-gradient(to right, #28a745, #20c997);
+      }
+      
+      /* Error notification styling */
+      .toast-error {
+        background: linear-gradient(to right, #dc3545, #c82333);
+      }
+      
+      /* Info notification styling */
+      .toast-info {
+        background: linear-gradient(to right, #17a2b8, #138496);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <h1 class="text-center">Loan a Book</h1>
+      </div>
+    </header>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <!-- Single homepage link -->
+            <li class="nav-item">
+              <a href="homepage.html" class="btn btn-link">Homepage</a>
+            </li>
+            <li class="nav-item">
+              <a href="return_book.html" class="btn btn-link">Return Book</a>
+            </li>
+            <li class="nav-item">
+              <a href="loans.html" class="btn btn-link">Loans</a>
+            </li>
+            <li class="nav-item">
+              <a href="add_customer.html" class="btn btn-link">Add Customer</a>
+            </li>
+            <li class="nav-item">
+              <a href="customers_list.html" class="btn btn-link">Customers List</a>
+            </li>
+            <li class="nav-item">
+              <a href="add_book.html" class="btn btn-link">Add Book</a>
+            </li>
+            <li class="nav-item">
+              <a href="books_list.html" class="btn btn-link">Books List</a>
+            </li>
+            <li class="nav-item">
+              <a href="remove_book.html" class="btn btn-link">Remove Book</a>
+            </li>
+            <li class="nav-item">
+              <a href="late_loans.html" class="btn btn-link">Late Loans</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Customer Search Section -->
+    <div class="content" id="searchCustomerSection">
+      <h2 id="searchCustomerHeader">Search Customer</h2>
+      <form
+        id="searchForm"
+        method="POST"
+        action="/search_customer"
+        onsubmit="searchCustomer(event)"
+      >
+        <div class="mb-3">
+          <label for="search_cust_id" class="form-label">Customer ID</label>
+          <input
+            type="number"
+            class="form-control"
+            id="search_cust_id"
+            name="search_cust_id"
+          />
+        </div>
+        <div id="customerSelection">
+          <div class="mb-3">
+            <label for="cust_name" class="form-label">Customer Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="cust_name"
+              name="cust_name"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="cust_city" class="form-label">Customer City</label>
+            <input
+              type="text"
+              class="form-control"
+              id="cust_city"
+              name="cust_city"
+            />
+          </div>
+          <div class="mb-4">
+            <label for="cust_age" class="form-label">Customer Age</label>
+            <input
+              type="number"
+              class="form-control"
+              id="cust_age"
+              name="cust_age"
+            />
+          </div>
+        </div>
+        <!-- Auto-search is triggered via input events -->
+        <button type="button" class="btn btn-primary" onclick="resetFields()">
+          Reset Fields
+        </button>
+      </form>
+
+      <div id="results"></div>
+      <div id="selectedCustomer" class="customer-details" style="display: none">
+        <p id="customerInfo"></p>
+      </div>
+    </div>
+
+    <!-- Loan Book Section -->
+    <div class="loan-book-section" id="loanBookSection" style="display: none">
+      <div id="customerInfoBook" style="color: green; font-weight: bold"></div>
+     
+      <!-- Book search form with fields arranged horizontally -->
+      <form id="searchBookForm" onsubmit="searchBooks(event)">
+        <br />
+        <h2>Search for a Book to Loan</h2>
+        
+        <!-- Search fields arranged in a single row with spacing -->
+        <div class="mb-3 row g-2">
+          <!-- Book ID field -->
+          <div class="col-auto" style="width: 10%;">
+            <label for="search-id" class="form-label">ID</label>
+            <input 
+              type="number" 
+              class="form-control" 
+              id="search-id" 
+              name="search-id"
+            />
+          </div>
+          
+          <!-- Title field -->
+          <div class="col-auto" style="width: 30%;">
+            <label for="search-title" class="form-label">Title</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="search-title" 
+              name="search-title"
+            />
+          </div>
+          
+          <!-- Author field -->
+          <div class="col-auto" style="width: 25%;">
+            <label for="search-author" class="form-label">Author</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="search-author" 
+              name="search-author"
+            />
+          </div>
+          
+          <!-- Year Published field -->
+          <div class="col-auto" style="width: 15%;">
+            <label for="search-year" class="form-label">Year</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="search-year" 
+              name="search-year"
+            />
+          </div>
+          
+          <!-- Loan Period field -->
+          <div class="col-auto" style="width: 20%;">
+            <label for="search-loan-period" class="form-label">Loan Period</label>
+            <select id="search-loan-period" class="form-select">
+              <option value="" disabled selected hidden>Select</option>
+              <option value="10">10 days</option>
+              <option value="5">5 days</option>
+              <option value="2">2 days</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Reset button positioned at the right side -->
+        <div class="mb-3 d-flex justify-content-end">
+          <button type="button" class="btn btn-primary" onclick="resetBookFields()">
+            Reset Fields
+          </button>
+        </div>
+      </form>
+
+      <!-- Book Results -->
+      <div id="bookResults">
+        <br />
+        <h3>Books Found:</h3>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th style="width: 10%;">ID</th>
+              <th style="width: 30%;">Title</th>
+              <th style="width: 25%;">Author</th>
+              <th style="width: 15%;">Year Published</th>
+              <th style="width: 20%;">Loan Period</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="book-list">
+            <!-- Filtered books will be added here -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Additional Information Section after selecting a book -->
+      <div id="loan-info" style="display: none">
+        <h3>Additional Loan Information</h3>
+        <p>
+          Details about the loan, return date, and any other relevant
+          information will appear here.
+        </p>
+      </div>
+      <!-- Section where the selected book details are displayed (including return date) -->
+      <div id="selectedBook" class="book-details" style="display: none">
+        <h3>The Selected Book:</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th class="highlight">ID</th>
+              <th class="highlight">Title</th>
+              <th class="highlight">Author</th>
+              <th class="highlight">Year Published</th>
+              <th class="highlight">Loan Period</th>
+              <th class="highlight">Return Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td id="bookID"></td>
+              <td id="bookTitle"></td>
+              <td id="bookAuthor"></td>
+              <td id="bookYear"></td>
+              <td id="bookLoanPeriod"></td>
+              <td id="bookReturnDate"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bootstrap 5.3 Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Toastify JS  -->
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    
+    <script>
+      // Delays function execution until user stops typing
+      function debounce(func, wait) {
+        let timeout;
+        return function() {
+          const context = this;
+          const args = arguments;
+          clearTimeout(timeout);
+          timeout = setTimeout(() => {
+            func.apply(context, args);
+          }, wait);
+        };
+      }
+
+      // Converts date strings to DD.MM.YYYY format
+      function formatDate(dateString) {
+        // Handle Date object or ISO string
+        const date = dateString instanceof Date ? dateString : new Date(dateString);
+        
+        // Check if date is valid
+        if (isNaN(date.getTime())) {
+          return "Invalid date";
+        }
+        
+        // Format as DD.MM.YYYY
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        
+        return `${day}.${month}.${year}`;
+      }
+
+      // Formats dates from different sources to uniform display format
+      function convertDateToFormatted(dateStr) {
+        // Convert ISO date format to locale-specific format
+      }
+
+      // Event listeners initialized when DOM content is fully loaded
+      document.addEventListener("DOMContentLoaded", function () {
+        // Customer search field event listeners with debounce
+        const debouncedCustomerSearch = debounce(function() { searchCustomer(); }, 300);
+        
+        document
+          .getElementById("search_cust_id")
+          .addEventListener("input", debouncedCustomerSearch);
+        document
+          .getElementById("cust_name")
+          .addEventListener("input", debouncedCustomerSearch);
+        document
+          .getElementById("cust_city")
+          .addEventListener("input", debouncedCustomerSearch);
+        document
+          .getElementById("cust_age")
+          .addEventListener("input", debouncedCustomerSearch);
+          
+        // Run initial customer search
+        searchCustomer();
+        
+        // Book search field event listeners with debounce
+        const debouncedBookSearch = debounce(function() { searchBooks(); }, 300);
+        
+        document
+          .getElementById("search-title")
+          .addEventListener("input", debouncedBookSearch);
+        document
+          .getElementById("search-author")
+          .addEventListener("input", debouncedBookSearch);
+        document
+          .getElementById("search-year")
+          .addEventListener("input", debouncedBookSearch);
+        document
+          .getElementById("search-id")
+          .addEventListener("input", debouncedBookSearch);
+        document
+          .getElementById("search-loan-period")
+          .addEventListener("change", debouncedBookSearch);
+      });
+
+      // Finds customers matching search criteria with partial text support
+      function searchCustomer(event) {
+        if (event && typeof event.preventDefault === "function")
+          event.preventDefault();
+        
+        // Get search values for substring matching
+        const idSearch = document.getElementById("search_cust_id").value.trim();
+        const nameSearch = document.getElementById("cust_name").value.toLowerCase().trim();
+        const citySearch = document.getElementById("cust_city").value.toLowerCase().trim();
+        const ageSearch = document.getElementById("cust_age").value.trim();
+        
+        // Build query string for backend filtering
+        const queryParams = new URLSearchParams();
+        
+        // Always include is_active=true to only get active customers
+        queryParams.append("is_active", "true");
+        
+        // Fetch all customers that are active
+        fetch(`/api/customers?${queryParams.toString()}`)
+          .then((response) => response.json())
+          .then((data) => {
+            // Filter the results on the client side for partial matching
+            const filteredData = data.filter(customer => {
+              return (
+                // ID partial match (convert both to strings for comparison)
+                (!idSearch || customer.id.toString().includes(idSearch)) &&
+                // Name partial match (case insensitive)
+                (!nameSearch || customer.name.toLowerCase().includes(nameSearch)) &&
+                // City partial match (case insensitive)
+                (!citySearch || customer.city.toLowerCase().includes(citySearch)) &&
+                // Age partial match (convert both to strings)
+                (!ageSearch || customer.age.toString().includes(ageSearch))
+              );
+            });
+            
+            // Log the search with criteria
+            logCustomerSearch({
+              id: idSearch,
+              name: nameSearch,
+              city: citySearch,
+              age: ageSearch
+            }, filteredData.length, data.length);
+            
+            // Display the filtered results
+            displayCustomerResults(filteredData);
+          })
+          .catch(error => {
+            console.error("Error fetching customers:", error);
+            document.getElementById("results").innerHTML = 
+              `<p class="text-danger">Error fetching customers: ${error.message}</p>`;
+          });
+      }
+
+      // Renders customer search results in a table
+      function displayCustomerResults(customers) {
+        const resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML = "";
+        
+        if (!Array.isArray(customers) || customers.length === 0) {
+          resultsDiv.innerHTML = "<p>No active customers found.</p>";
+          return;
+        }
+        
+        const table = document.createElement("table");
+        table.classList.add("table", "table-striped");
+        table.innerHTML = `
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>City</th>
+              <th>Age</th>
+              <th>Select</th>
+            </tr>
+          </thead>
+          <tbody>
+        `;
+        
+        customers.forEach((customer) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${customer.id}</td>
+            <td>${customer.name}</td>
+            <td>${customer.city}</td>
+            <td>${customer.age}</td>
+            <td><button class="btn btn-success" onclick="selectCustomer(${customer.id})">Select</button></td>
+          `;
+          table.appendChild(row);
+        });
+        
+        table.innerHTML += `</tbody>`;
+        resultsDiv.appendChild(table);
+      }
+
+      // Stores currently selected customer information
+      let selectedCustomer = null;
+
+      // Displays selected customer and shows book selection interface
+      function selectCustomer(id) {
+        fetch(`/api/customers/${id}`)
+          .then((response) => response.json())
+          .then((customer) => {
+            selectedCustomer = customer;
+            document.getElementById(
+              "customerInfo"
+            ).innerText = `ID: ${customer.id}, Name: ${customer.name}, City: ${customer.city}, Age: ${customer.age}`;
+            document.getElementById("selectedCustomer").style.display = "block";
+            document.getElementById("searchCustomerSection").style.display = "none";
+            document.getElementById("loanBookSection").style.display = "block";
+            document.getElementById(
+              "customerInfoBook"
+            ).innerHTML = `You selected:<br><br> Name: <span style="margin-right: 10px;">${customer.name}</span> City: <span style="margin-right: 10px;">${customer.city}</span> Age: <span style="margin-right: 10px;">${customer.age}</span> ID: ${customer.id}`;
+            
+            // Standard success notification
+            showSuccessToast(`Customer Selected: ${customer.name}`);
+            
+            // Automatically search for books after selecting a customer
+            searchBooks();
+          });
+      }
+
+      // Filters books based on search criteria
+      function searchBooks(event) {
+        if (event && typeof event.preventDefault === "function")
+          event.preventDefault();
+          
+        const title = document.getElementById("search-title").value.toLowerCase().trim();
+        const author = document.getElementById("search-author").value.toLowerCase().trim();
+        const year = document.getElementById("search-year").value.trim();
+        const id = document.getElementById("search-id").value.trim();
+        const loanPeriod = document.getElementById("search-loan-period").value;
+      
+        fetch("/api/books")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // Filter books with partial matching on all fields
+            const filteredBooks = data.filter((book) => {
+              return (
+                book.is_active &&
+                !book.is_loaned &&
+                // Title partial match
+                (!title || book.title.toLowerCase().includes(title)) &&
+                // Author partial match
+                (!author || book.author.toLowerCase().includes(author)) &&
+                // Year partial match
+                (!year || book.year_published.toString().includes(year)) &&
+                // ID partial match
+                (!id || book.id.toString().includes(id)) &&
+                // Loan period exact match (dropdown selection)
+                (!loanPeriod || book.loan_period.toString() === loanPeriod)
+              );
+            });
+      
+            // Log the search operation to server with detailed criteria
+            logBookSearch({
+              title: title, 
+              author: author, 
+              year: year, 
+              id: id, 
+              loan_period: loanPeriod
+            }, filteredBooks.length, data.length);
+            
+            displayBookResults(filteredBooks);
+          })
+          .catch((error) => {
+            showErrorToast("Error fetching books: " + error.message);
+          });
+      }
+
+      // Populates book results table with filtered books
+      function displayBookResults(books) {
+        const bookList = document.getElementById("book-list");
+        bookList.innerHTML = ""; // Clear previous results
+      
+        books.forEach((book) => {
+          // Prepare the book title with encoding to protect against apostrophes
+          const safeTitle = encodeURIComponent(book.title);
+          const safeAuthor = encodeURIComponent(book.author);
+          const safeYear = encodeURIComponent(book.year_published);
+          const safeLoanPeriod = encodeURIComponent(book.loan_period);
+      
+          const listItem = document.createElement("tr");
+          listItem.innerHTML = `
+            <td>${book.id}</td>
+            <td>${book.title}</td>
+            <td>${book.author}</td>
+            <td>${book.year_published}</td>
+            <td>${book.loan_period}</td>
+            <td>
+              <button 
+                class="btn btn-success" 
+                id="loan-btn-${book.id}" 
+                onclick="selectBook(${book.id}, \`${safeTitle}\`, \`${safeAuthor}\`, \`${safeYear}\`, \`${safeLoanPeriod}\`)">
+                Select
+              </button>
+            </td>
+          `;
+          bookList.appendChild(listItem);
+        });
+      }
+
+      // Shows detail view of selected book with return date
+      function selectBook(
+        bookId,
+        encodedTitle,
+        encodedAuthor,
+        encodedYear,
+        encodedLoanPeriod
+      ) {
+        // Restore the book name, author and other fields from encoding
+        const title = decodeURIComponent(encodedTitle);
+        const author = decodeURIComponent(encodedAuthor);
+        const year = decodeURIComponent(encodedYear);
+        const loanPeriod = decodeURIComponent(encodedLoanPeriod);
+
+        document.getElementById("bookResults").style.display = "none";
+        document.getElementById("searchBookForm").style.display = "none";
+        document.getElementById("selectedBook").style.display = "block";
+
+        document.getElementById("bookID").innerText = bookId;
+        document.getElementById("bookTitle").innerText = title;
+        document.getElementById("bookAuthor").innerText = author;
+        document.getElementById("bookYear").innerText = year;
+        document.getElementById("bookLoanPeriod").innerText = loanPeriod;
+
+        const returnDate = calculateReturnDate(loanPeriod);
+        document.getElementById("bookReturnDate").innerText = returnDate;
+
+        const loanButton = document.createElement("button");
+        loanButton.innerText = "Complete Loan";
+        loanButton.classList.add("btn", "btn-primary");
+        loanButton.onclick = () => completeLoan(bookId);
+
+        document.getElementById("selectedBook").appendChild(loanButton);
+      }
+
+      // Processes the loan and shows confirmation with return date
+      function completeLoan(bookId) {
+        if (!selectedCustomer) {
+          showErrorToast("Please select a customer before completing the loan.");
+          return;
+        }
+        
+        fetch(`/api/loan_book`, {  // Using relative path with api prefix
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            book_id: bookId,
+            cust_id: selectedCustomer.id,
+          }),
+        })
+        .then((response) => {
+          if (!response.ok) {
+            return response.json().then(err => {
+              throw new Error(err.message || `HTTP error! Status: ${response.status}`);
+            });
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data.success) {
+            let returnDateDisplay = "Unknown";
+            
+            if (data.return_date) {
+              try {
+                returnDateDisplay = formatDate(data.return_date);
+              } catch (e) {
+                console.error("Error formatting date:", e);
+                returnDateDisplay = data.return_date;
+              }
+            }
+            
+            showSuccessToast(`Book loaned successfully! Return by: ${returnDateDisplay}`);
+            
+            // Wait a moment for the toast to be visible
+            setTimeout(() => {
+              // Reset the page to initial state
+              window.location.reload();
+            }, 2000); // 2-second delay so user can see the success message
+          } else {
+            showErrorToast("Failed to loan the book: " + (data.message || "Unknown error"));
+          }
+        })
+        .catch((error) => {
+          showErrorToast(`Error in loaning book: ${error.message}`);
+        });
+      }
+
+      // Determines the return date based on loan period
+      function calculateReturnDate(loanPeriod) {
+        const loanPeriodNum = Number(loanPeriod);
+        if (isNaN(loanPeriodNum) || loanPeriodNum <= 0)
+          return "Invalid loan period";
+        const today = new Date();
+        const returnDate = new Date(today);
+        returnDate.setDate(today.getDate() + loanPeriodNum);
+        // Format the date as DD.MM.YYYY
+        return formatDate(returnDate);
+      }
+
+      // Resets customer search form and returns to initial state
+      function resetFields() {
+        document.getElementById("search_cust_id").value = "";
+        document.getElementById("cust_name").value = "";
+        document.getElementById("cust_city").value = "";
+        document.getElementById("cust_age").value = "";
+        document.getElementById("results").innerHTML = "";
+        document.getElementById("selectedCustomer").style.display = "none";
+        document.getElementById("searchCustomerSection").style.display =
+          "block";
+        document.getElementById("loanBookSection").style.display = "none";
+        document.getElementById("bookResults").style.display = "block";
+        document.getElementById("selectedBook").style.display = "none";
+        searchCustomer();
+      }
+
+      // Clears book search filters and refreshes results
+      function resetBookFields() {
+        document.getElementById("search-title").value = "";
+        document.getElementById("search-author").value = "";
+        document.getElementById("search-year").value = "";
+        document.getElementById("search-loan-period").value = "";
+        document.getElementById("search-id").value = "";
+        document.getElementById("book-list").innerHTML = "";
+        searchBooks();
+      }
+
+      // Displays green success notifications at the top center of screen
+      function showSuccessToast(message) {
+        if (typeof Toastify === 'function') {
+          Toastify({
+            text: message,
+            duration: 3000,
+            close: true,
+            gravity: "top",
+            position: "center",
+            className: "toast-success",
+            stopOnFocus: true
+          }).showToast();
+        } else {
+          alert(message);
+        }
+      }
+
+      // Displays red error notifications at the top center of screen
+      function showErrorToast(message) {
+        if (typeof Toastify === 'function') {
+          Toastify({
+            text: message,
+            duration: 3000,
+            close: true,
+            gravity: "top",
+            position: "center",
+            className: "toast-error",
+            stopOnFocus: true
+          }).showToast();
+        } else {
+          alert(message);
+        }
+      }
+
+      // Displays blue information notifications at the top center of screen
+      function showInfoToast(message) {
+        if (typeof Toastify === 'function') {
+          Toastify({
+            text: message,
+            duration: 3000,
+            close: true,
+            gravity: "top", 
+            position: "center",
+            className: "toast-info",
+            stopOnFocus: true
+          }).showToast();
+        } else {
+          alert(message);
+        }
+      }
+
+      // Function to record book search analytics
+      function logCustomerSearch(searchParams, resultCount, totalCount) {
+        // Remove empty parameters
+        const cleanParams = {};
+        for (const [key, value] of Object.entries(searchParams)) {
+          if (value) {
+            cleanParams[key] = value;
+          }
+        }
+        
+        // Only log if there are actual search parameters or filtered results
+        if (Object.keys(cleanParams).length > 0 || resultCount < totalCount) {
+          fetch("/api/log_search", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              pageType: "loan_customers", 
+              searchParams: cleanParams,
+              resultCount: resultCount,
+              totalRecords: totalCount
+            }),
+          }).catch(error => console.error("Error logging customer search:", error));
+        }
+      }
+
+      // Add this new helper function to log book searches
+      function logBookSearch(searchParams, resultCount, totalRecords) {
+        // Remove empty parameters
+        const cleanParams = {};
+        for (const [key, value] of Object.entries(searchParams)) {
+          if (value) {
+            cleanParams[key] = value;
+          }
+        }
+        
+        // Only log if there are actual search parameters or if we're filtering results
+        if (Object.keys(cleanParams).length > 0 || resultCount < totalRecords) {
+          fetch("/api/log_search", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              pageType: "loan_books",
+              searchParams: cleanParams,
+              resultCount: resultCount,
+              totalRecords: totalRecords
+            }),
+          }).catch(error => console.error("Error logging search:", error));
+        }
+      }
+    </script>
+  </body>
+</html>

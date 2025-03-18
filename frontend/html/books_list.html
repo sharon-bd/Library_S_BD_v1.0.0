@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Books List</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* Page styling using Bootstrap with additional custom rules */
+      */ body {
+        background-color: #f8f9fa;
+      }
+
+      /* Header styling */
+      .header {
+        padding: 10px;
+        background-color: #c2b280;
+        margin-bottom: 20px;
+      }
+
+      .content {
+        padding: 20px;
+      }
+
+      table {
+        margin-top: 20px;
+      }
+
+      /* Hide any unused search button if it existed */
+      .btn-search {
+        display: none;
+      }
+
+      /* Style for the "Clear Search" button (blue) */
+      .btn-clear {
+        background-color: #007bff; /* blue */
+        color: white;
+      }
+
+      /* Arrange search fields in a row */
+      .search-row {
+        margin-bottom: 15px;
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .search-row .col {
+        padding-left: 5px;
+        padding-right: 5px;
+        flex: 1; /* Allows fields to share available space */
+      }
+
+      /* Minimal horizontal padding for Book ID search field */
+      #search-id {
+        padding-left: 2px;
+        padding-right: 2px;
+      }
+
+      /*
+        Wider field for the Year Published search:
+        using min-width to make it visually larger
+      */
+      #search-year {
+        min-width: 200px; /* expands the field boundary */
+      }
+
+      /* Styles the container for the clear button to align it to the right */
+      .clear-button-container {
+        display: flex;
+        justify-content: flex-end; /* This aligns the button to the right */
+        margin-bottom: 20px;
+      }
+    </style>
+    <script>
+      // Creates a debounced version of the log function to delay execution
+      const debouncedLogSearch = (function () {
+        let timeout = null;
+        return function () {
+          clearTimeout(timeout);
+          timeout = setTimeout(logSearchOperation, 800);
+        };
+      })();
+
+      // SearchBooks function
+      function searchBooks() {
+        // Get search values
+        const idSearch = document
+          .getElementById("search-id")
+          .value.trim()
+          .toLowerCase();
+        const titleSearch = document
+          .getElementById("search-title")
+          .value.trim()
+          .toLowerCase();
+        const authorSearch = document
+          .getElementById("search-author")
+          .value.trim()
+          .toLowerCase();
+        const yearSearch = document
+          .getElementById("search-year")
+          .value.trim()
+          .toLowerCase();
+        const loanPeriodSearch = document
+          .getElementById("search-loan-period")
+          .value.trim()
+          .toLowerCase();
+        const statusSearch = document
+          .getElementById("search-status")
+          .value.trim()
+          .toLowerCase();
+
+        // Fetch all books from the API
+        fetch("/api/books")
+          .then((response) => response.json())
+          .then((data) => {
+            // Store all books for reference
+            window.allBooks = data;
+
+            // Filter books with substring matching
+            const filteredBooks = data.filter((book) => {
+              const bookId = book.id.toString().toLowerCase();
+              const bookTitle = book.title.toLowerCase();
+              const bookAuthor = book.author.toLowerCase();
+              const bookYear = book.year_published.toString().toLowerCase();
+              const bookLoanPeriod = book.loan_period.toString().toLowerCase();
+
+              // Determine status text
+              const statusText = book.is_active
+                ? book.is_loaned
+                  ? "on loan"
+                  : "available"
+                : "inactive";
+
+              return (
+                (idSearch === "" || bookId.includes(idSearch)) &&
+                (titleSearch === "" || bookTitle.includes(titleSearch)) &&
+                (authorSearch === "" || bookAuthor.includes(authorSearch)) &&
+                (yearSearch === "" || bookYear.includes(yearSearch)) &&
+                (loanPeriodSearch === "" ||
+                  bookLoanPeriod === loanPeriodSearch) &&
+                (statusSearch === "" || statusText === statusSearch)
+              );
+            });
+
+            const bookList = document.getElementById("book-list");
+            bookList.innerHTML = "";
+
+            // If no books match, show a placeholder row
+            if (filteredBooks.length === 0) {
+              const noResults = document.createElement("tr");
+              noResults.innerHTML = "<td colspan='6'>No books found</td>";
+              bookList.appendChild(noResults);
+            } else {
+              // Build table rows for the filtered data
+              filteredBooks.forEach((book) => {
+                const statusText = book.is_active
+                  ? book.is_loaned
+                    ? "On Loan"
+                    : "Available"
+                  : "Inactive";
+
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                  <td>${book.id}</td>
+                  <td>${book.title}</td>
+                  <td>${book.author}</td>
+                  <td>${book.year_published}</td>
+                  <td>${book.loan_period}</td>
+                  <td>${statusText}</td>
+                `;
+                bookList.appendChild(row);
+              });
+            }
+
+            // Log search after results are displayed (debounced)
+            // Only use ONE logging mechanism - using the debounced version is better
+            debouncedLogSearch();
+          })
+          .catch((error) => console.error("Error fetching data:", error));
+      }
+
+      // Clears all search fields and reruns the search
+      function refreshPage() {
+        document.getElementById("search-id").value = "";
+        document.getElementById("search-title").value = "";
+        document.getElementById("search-author").value = "";
+        document.getElementById("search-year").value = "";
+        document.getElementById("search-loan-period").selectedIndex = 0;
+        document.getElementById("search-status").selectedIndex = 0;
+        searchBooks();
+      }
+
+      // Attach event listeners for automatic searching
+      window.onload = function () {
+        searchBooks();
+        // For text inputs, use "input" events
+        document
+          .getElementById("search-id")
+          .addEventListener("input", searchBooks);
+        document
+          .getElementById("search-title")
+          .addEventListener("input", searchBooks);
+        document
+          .getElementById("search-author")
+          .addEventListener("input", searchBooks);
+        document
+          .getElementById("search-year")
+          .addEventListener("input", searchBooks);
+        // For dropdowns, use "change" events
+        document
+          .getElementById("search-loan-period")
+          .addEventListener("change", searchBooks);
+        document
+          .getElementById("search-status")
+          .addEventListener("change", searchBooks);
+      };
+
+      function logSearchOperation() {
+        // Get search field values
+        const searchId = document.getElementById("search-id").value.trim();
+        const searchTitle = document
+          .getElementById("search-title")
+          .value.trim();
+        const searchAuthor = document
+          .getElementById("search-author")
+          .value.trim();
+        const searchYear = document.getElementById("search-year").value.trim();
+        const searchLoanPeriod =
+          document.getElementById("search-loan-period").value;
+        const searchStatus = document.getElementById("search-status").value;
+
+        // Build search criteria object
+        const searchParams = {};
+        if (searchId) searchParams.id = searchId;
+        if (searchTitle) searchParams.title = searchTitle;
+        if (searchAuthor) searchParams.author = searchAuthor;
+        if (searchYear) searchParams.year = searchYear;
+        if (searchLoanPeriod) searchParams.loanPeriod = searchLoanPeriod;
+        if (searchStatus) searchParams.status = searchStatus;
+
+        // Get visible rows from the table
+        const tableBody = document.getElementById("book-list");
+        let resultCount = 0;
+
+        // Check if "No books found" message exists
+        const noResultsFound = tableBody.innerText.includes("No books found");
+
+        if (!noResultsFound) {
+          // Count visible rows if there are results
+          resultCount = tableBody.getElementsByTagName("tr").length;
+        }
+
+        // Send the log data to server
+        fetch("/api/log_search", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            pageType: "books",
+            searchParams: searchParams,
+            resultCount: resultCount,
+            totalRecords: window.allBooks ? window.allBooks.length : 0,
+          }),
+        }).catch((err) => console.error("Error logging search:", err));
+      }
+    </script>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <h1 class="text-center">Books List</h1>
+      </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav d-flex flex-wrap">
+            <li class="nav-item">
+              <a class="btn btn-link" href="homepage.html">Homepage</a>
+            </li>
+            <li class="nav-item">
+              <a href="/frontend/html/loan_book.html" class="btn btn-link"
+                >Loan a Book</a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="/frontend/html/return_book.html" class="btn btn-link"
+                >Return Book</a
+              >
+            </li>
+
+            <li class="nav-item">
+              <a href="/frontend/html/loans.html" class="btn btn-link">Loans</a>
+            </li>
+            <li class="nav-item">
+              <a href="/frontend/html/add_customer.html" class="btn btn-link"
+                >Add Customer</a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="/frontend/html/customers_list.html" class="btn btn-link"
+                >Customers List</a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="/frontend/html/add_book.html" class="btn btn-link"
+                >Add Book</a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="/frontend/html/remove_book.html" class="btn btn-link"
+                >Remove Book</a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="/frontend/html/late_loans.html" class="btn btn-link"
+                >Late Loans</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="content">
+      <div class="container">
+        <!-- Search row with six fields in the same order as the results table -->
+        <div class="search-row">
+          <!-- Book ID (minimal horizontal padding) -->
+          <div class="col">
+            <input
+              type="text"
+              id="search-id"
+              placeholder="Search by Book ID"
+              class="form-control"
+            />
+          </div>
+          <!-- Title (text input) -->
+          <div class="col">
+            <input
+              type="text"
+              id="search-title"
+              placeholder="Search by Title"
+              class="form-control"
+            />
+          </div>
+          <!-- Author (text input) -->
+          <div class="col">
+            <input
+              type="text"
+              id="search-author"
+              placeholder="Search by Author"
+              class="form-control"
+            />
+          </div>
+          <!-- Year Published (text input, widened via CSS) -->
+          <div class="col">
+            <input
+              type="text"
+              id="search-year"
+              placeholder="Search by Year Published"
+              class="form-control"
+            />
+          </div>
+          <!-- Loan Period (dropdown) -->
+          <div class="col">
+            <select id="search-loan-period" class="form-select">
+              <option value="">All Loan Periods</option>
+              <option value="10">Up to 10 days</option>
+              <option value="5">Up to 5 days</option>
+              <option value="2">Up to 2 days</option>
+            </select>
+          </div>
+          <!-- Status (dropdown) -->
+          <div class="col">
+            <select id="search-status" class="form-select">
+              <option value="">All Statuses</option>
+              <option value="on loan">On Loan</option>
+              <option value="available">Available</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+        <!-- Clear Search button -->
+        <div class="clear-button-container">
+          <button class="btn btn-primary btn-clear" onclick="refreshPage()">
+            Clear Search
+          </button>
+        </div>
+
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Book ID</th>
+              <th>Title</th>
+              <th>Author</th>
+              <th>Year Published</th>
+              <th>Loan Period (Days)</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="book-list"></tbody>
+        </table>
+      </div>
+    </main>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

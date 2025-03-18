@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Loans</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%; /* Ensure full height */
+        background-color: #f8f9fa; /* Match Loan a Book background */
+      }
+
+      /* Full-screen container to utilize entire width and height */
+      .full-screen-container {
+        min-height: 100vh; /* Full viewport height */
+        display: flex;
+        flex-direction: column;
+        width: 100%; /* Full width */
+      }
+
+      .header {
+        padding: 10px;
+        background-color: #c2b280; /* Match Loan a Book header color */
+        flex-shrink: 0; /* Prevent shrinking */
+      }
+
+      .navbar {
+        flex-shrink: 0; /* Prevent shrinking */
+        background-color: #f8f9fa; /* Match Loan a Book navbar background */
+      }
+
+      .navbar-nav .nav-link {
+        color: #333 !important; /* Dark color like in the Return Book page */
+        font-weight: normal;
+        text-decoration: none;
+      }
+
+      .navbar-nav .nav-link:hover {
+        color: #000 !important; /* Color change on hover */
+      }
+
+      .navbar-nav .btn-link {
+        color: #007bff; /* Bootstrap default link color */
+        text-decoration: none;
+      }
+
+      .navbar-nav .btn-link:hover {
+        color: #0056b3; /* Bootstrap default link hover color */
+        text-decoration: underline;
+      }
+
+      /* Content area fills remaining space and uses full width */
+      .content {
+        flex-grow: 1; /* Expand to fill available height */
+        padding: 20px; /* Match Loan a Book padding */
+        width: 100%; /* Full width */
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .table {
+        table-layout: fixed;
+        width: 100%;
+      }
+
+      /* Set specific widths for columns */
+      th:first-child {
+        /* # column */
+        width: 5%;
+      }
+      th:nth-child(2), /* Customer Name */ th:nth-child(3) {
+        /* Book Title */
+        width: 20%;
+      }
+      th:nth-child(4) {
+        /* Author */
+        width: 15%;
+      }
+      th:nth-child(5), /* Loan Date */ th:nth-child(6) {
+        /* Return Date */
+        width: 20%;
+      }
+      th:nth-child(7) {
+        /* Book ID */
+        width: 10%;
+      }
+
+      /* Ensure search inputs follow column widths */
+      .search-input {
+        width: 100%;
+        padding: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+        text-align: center;
+        max-width: 100%;
+      }
+
+      th,
+      td {
+        text-align: left;
+        vertical-align: middle;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        word-wrap: break-word;
+      }
+
+      th {
+        background-color: #f4f4f4;
+        color: #333;
+      }
+
+      /* Alternate row colors to match Loan a Book */
+      .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f5f5dc; /* Match Loan a Book odd rows */
+      }
+      .table-striped tbody tr:nth-of-type(even) {
+        background-color: #e3e1d4; /* Match Loan a Book even rows */
+      }
+
+      .clear-container {
+        display: flex;
+        justify-content: flex-end;
+        margin: 10px 0;
+      }
+
+      /* Style for overdue loans (past due date) */
+      .overdue {
+        color: #b71c1c !important; /* Dark red text for entire row */
+        font-weight: bold !important;
+      }
+
+      .overdue td:nth-child(6) {
+        /* 6th column is Return Date */
+        font-weight: bold;
+        color: #b71c1c !important; /* Dark red text */
+        background-color: inherit !important; /* Keep original background */
+      }
+
+      .overdue td {
+        color: #b71c1c !important; /* Dark red */
+        font-weight: bold !important;
+      }
+
+      /* Style for cells in rows due today - make all cells bold */
+      .due-today td {
+        font-weight: bold !important; /* Apply bold formatting to all cells in the row */
+      }
+
+      /* Maintain existing styling for the return date cell */
+      .due-today td:nth-child(6)::after {
+        content: " (Today)";
+        color: #e65100; /* Orange text */
+        font-weight: bold;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        /* Tablets and smaller */
+        .navbar-nav {
+          flex-direction: column; /* Stack navbar items vertically */
+          text-align: center;
+        }
+        th,
+        td {
+          padding: 5px; /* Reduce padding */
+          font-size: 0.9rem; /* Slightly smaller text */
+        }
+        .search-input {
+          font-size: 0.8rem; /* Smaller inputs */
+          padding: 3px;
+        }
+        .table {
+          font-size: 0.85rem; /* Smaller table text */
+        }
+      }
+
+      @media (max-width: 576px) {
+        /* Mobile phones */
+        th,
+        td {
+          display: block; /* Stack table cells */
+          width: 100%; /* Full width */
+          text-align: center;
+        }
+        th:first-child,
+        th:nth-child(2),
+        th:nth-child(3),
+        th:nth-child(4),
+        th:nth-child(5),
+        th:nth-child(6),
+        th:nth-child(7) {
+          width: 100%; /* Reset column widths */
+        }
+        .search-input {
+          margin: 5px 0; /* Add spacing between inputs */
+        }
+        .table {
+          margin: 10px 0; /* Reduce margin */
+        }
+      }
+
+      /* Style for overdue loans (past due date) */
+      #resetSearch {
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="full-screen-container">
+      <header class="header">
+        <div class="container-fluid">
+          <h1 class="text-center">Loans</h1>
+        </div>
+      </header>
+
+      <!-- Navigation Bar -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav d-flex flex-wrap">
+              <li class="nav-item">
+                <a class="btn btn-link" href="/">Homepage</a>
+              </li>
+              <li class="nav-item">
+                <a href="/frontend/html/loan_book.html" class="btn btn-link"
+                  >Loan a Book</a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="/frontend/html/return_book.html" class="btn btn-link"
+                  >Return Book</a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="/frontend/html/add_customer.html" class="btn btn-link"
+                  >Add Customer</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  href="/frontend/html/customers_list.html"
+                  class="btn btn-link"
+                  >Customers List</a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="/frontend/html/add_book.html" class="btn btn-link"
+                  >Add Book</a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="/frontend/html/books_list.html" class="btn btn-link"
+                  >Books List</a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="/frontend/html/remove_book.html" class="btn btn-link"
+                  >Remove Book</a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="/frontend/html/late_loans.html" class="btn btn-link"
+                  >Late Loans</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <div class="content">
+        <div class="container-fluid">
+          <!-- Changed to container-fluid for full width -->
+          <!-- Search labels and inputs -->
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>
+                  Customer Name<input
+                    type="text"
+                    id="filter-customer"
+                    class="search-input"
+                    oninput="filterTable()"
+                  />
+                </th>
+                <th>
+                  Book Title<input
+                    type="text"
+                    id="filter-title"
+                    class="search-input"
+                    oninput="filterTable()"
+                  />
+                </th>
+                <th>
+                  Author<input
+                    type="text"
+                    id="filter-author"
+                    class="search-input"
+                    oninput="filterTable()"
+                  />
+                </th>
+                <th>
+                  Loan Date
+                  <input
+                    type="text"
+                    id="filter-loan-date-text"
+                    class="search-input date-input"
+                    placeholder="DD.MM.YYYY"
+                    oninput="filterTable()"
+                  />
+                </th>
+                <th>
+                  Due Date
+                  <input
+                    type="text"
+                    id="filter-return-date-text"
+                    class="search-input date-input"
+                    placeholder="DD.MM.YYYY"
+                    oninput="filterTable()"
+                  />
+                </th>
+                <th>
+                  Book ID<input
+                    type="text"
+                    id="filter-book-id"
+                    class="search-input"
+                    oninput="filterTable()"
+                  />
+                </th>
+              </tr>
+            </thead>
+          </table>
+
+          <!-- Update the Clear button to use resetSearchFields function  -->
+          <div class="clear-container">
+            <button class="btn btn-success" onclick="resetSearchFields()">
+              Clear
+            </button>
+          </div>
+
+          <!-- Table headers and data -->
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Customer Name</th>
+                <th>Book Title</th>
+                <th>Author</th>
+                <th>Loan Date</th>
+                <th>Due Date</th>
+                <th>Book ID</th>
+              </tr>
+            </thead>
+            <tbody id="loans-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Global array to store all loans for filtering
+      let allLoans = [];
+
+      /**
+       * Formats dates consistently across the application as DD.MM.YYYY
+       */
+      function formatDateForDisplay(dateString, defaultValue = "N/A") {
+        if (!dateString) return defaultValue;
+
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return defaultValue;
+
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = date.getFullYear();
+
+        return `${day}.${month}.${year}`;
+      }
+
+      /**
+       * Checks if a date search input matches a displayed date
+       * Supports partial date matching (e.g. only day, month, or year)
+       */
+      function isDateMatchingSearch(searchDate, cellDate) {
+        if (!searchDate) return true;
+        if (!cellDate) return false;
+
+        // Convert ISO date format (YYYY-MM-DD) to display format (DD.MM.YYYY)
+        if (searchDate.includes("-")) {
+          const parts = searchDate.split("-");
+          if (parts.length === 3) {
+            searchDate = `${parts[2]}.${parts[1]}.${parts[0]}`;
+          }
+        }
+
+        // Simple substring match for partial dates
+        return cellDate.toLowerCase().includes(searchDate.toLowerCase());
+      }
+
+      /**
+       * Filters the loans table based on all search criteria
+       */
+      function filterTable() {
+        // Debounced logging to avoid too many requests
+        debouncedLogSearch();
+
+        const filterCustomer = document
+          .getElementById("filter-customer")
+          .value.toLowerCase();
+        const filterTitle = document
+          .getElementById("filter-title")
+          .value.toLowerCase();
+        const filterAuthor = document
+          .getElementById("filter-author")
+          .value.toLowerCase();
+        const filterLoanDate = document.getElementById(
+          "filter-loan-date-text"
+        ).value;
+        const filterReturnDate = document.getElementById(
+          "filter-return-date-text"
+        ).value;
+        const filterBookId = document
+          .getElementById("filter-book-id")
+          .value.toLowerCase();
+
+        const rows = document.querySelectorAll("#loans-table-body tr");
+
+        rows.forEach((row) => {
+          const cells = row.getElementsByTagName("td");
+          if (cells.length < 7) return;
+
+          // Get text content for text fields
+          const matchesCustomer = cells[1].textContent
+            .toLowerCase()
+            .includes(filterCustomer);
+          const matchesTitle = cells[2].textContent
+            .toLowerCase()
+            .includes(filterTitle);
+          const matchesAuthor = cells[3].textContent
+            .toLowerCase()
+            .includes(filterAuthor);
+          const matchesBookId = cells[6].textContent
+            .toLowerCase()
+            .includes(filterBookId);
+
+          // Get date values from data attributes
+          const loanDateCell = cells[4].getAttribute("data-date") || "";
+          const returnDateCell = cells[5].getAttribute("data-date") || "";
+
+          // Check date matches using standardized function
+          const matchesLoanDate =
+            !filterLoanDate ||
+            isDateMatchingSearch(filterLoanDate, loanDateCell);
+          const matchesReturnDate =
+            !filterReturnDate ||
+            isDateMatchingSearch(filterReturnDate, returnDateCell);
+
+          // Show row only if all criteria match
+          row.style.display =
+            matchesCustomer &&
+            matchesTitle &&
+            matchesAuthor &&
+            matchesLoanDate &&
+            matchesReturnDate &&
+            matchesBookId
+              ? ""
+              : "none";
+        });
+      }
+
+      /**
+       * Fetches loans data and displays in table with appropriate styling
+       */
+      async function fetchLoans() {
+        try {
+          const response = await fetch("/api/loans");
+          if (!response.ok)
+            throw new Error(`HTTP error! status: ${response.status}`);
+
+          const data = await response.json();
+
+          // Sort loans by loan date, then return date
+          allLoans = (data.loans || []).sort((a, b) => {
+            const loanDateA = new Date(a.loan_date || "9999-12-31");
+            const loanDateB = new Date(b.loan_date || "9999-12-31");
+            if (loanDateA.getTime() !== loanDateB.getTime()) {
+              return loanDateA - loanDateB;
+            }
+            const returnDateA = new Date(a.return_date || "9999-12-31");
+            const returnDateB = new Date(b.return_date || "9999-12-31");
+            return returnDateA - returnDateB;
+          });
+
+          const loansTableBody = document.getElementById("loans-table-body");
+          loansTableBody.innerHTML = "";
+
+          // Handle empty loans list
+          if (allLoans.length === 0) {
+            loansTableBody.innerHTML =
+              '<tr><td colspan="7" class="text-center">No loans found</td></tr>';
+            return;
+          }
+
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+
+          // Populate table with loans
+          allLoans.forEach((loan, index) => {
+            const row = document.createElement("tr");
+
+            // Format dates consistently
+            const returnDate = loan.return_date
+              ? new Date(loan.return_date)
+              : null;
+            if (returnDate) returnDate.setHours(0, 0, 0, 0);
+
+            const loanDateFormatted = formatDateForDisplay(loan.loan_date);
+            const returnDateFormatted = formatDateForDisplay(loan.return_date);
+
+            // Apply styling based on loan status
+            const isOverdue = returnDate && returnDate < today;
+            const isDueToday =
+              returnDate && returnDate.getTime() === today.getTime();
+
+            if (isOverdue) {
+              row.classList.add("overdue");
+            } else if (isDueToday) {
+              row.classList.add("due-today");
+            }
+
+            row.innerHTML = `
+              <td>${index + 1}</td>
+              <td>${loan.customer_name || "N/A"}</td>
+              <td>${loan.book_title || "N/A"}</td>
+              <td>${loan.book_author || "N/A"}</td>
+              <td data-date="${loanDateFormatted}">
+                ${loanDateFormatted}
+              </td>
+              <td data-date="${returnDateFormatted}">
+                ${returnDateFormatted}${
+              isOverdue
+                ? " <span style='color:#b71c1c; font-weight:bold;'>(Overdue)</span>"
+                : ""
+            }
+              </td>
+              <td>${loan.book_id || "N/A"}</td>
+            `;
+
+            loansTableBody.appendChild(row);
+          });
+        } catch (error) {
+          console.error("Error fetching loans");
+          const loansTableBody = document.getElementById("loans-table-body");
+          loansTableBody.innerHTML =
+            '<tr><td colspan="7" class="text-center text-danger">Error loading loans. Please try again.</td></tr>';
+        }
+      }
+
+      function debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+      }
+
+      /**
+       * Resets all search fields and shows all results
+       */
+      function resetSearchFields() {
+        const searchFields = [
+          "filter-customer",
+          "filter-title",
+          "filter-author",
+          "filter-loan-date-text",
+          "filter-return-date-text",
+          "filter-book-id",
+        ];
+
+        searchFields.forEach((fieldId) => {
+          document.getElementById(fieldId).value = "";
+        });
+
+        filterTable();
+      }
+
+      /**
+       * Synchronizes the values between date input types
+       * @param {string} sourceId - The ID of the field that was changed
+       * @param {string} targetId - The ID of the field to update
+       */
+      function syncDateFields(sourceId, targetId) {
+        const sourceElement = document.getElementById(sourceId);
+        const targetElement = document.getElementById(targetId);
+
+        if (!sourceElement || !targetElement) return;
+
+        // If source is a text field and target is a date field
+        if (sourceId.includes("-text")) {
+          const dateValue = parseDateInput(sourceElement.value);
+          if (dateValue) {
+            // Format as YYYY-MM-DD for the date input
+            const year = dateValue.getFullYear();
+            const month = String(dateValue.getMonth() + 1).padStart(2, "0");
+            const day = String(dateValue.getDate()).padStart(2, "0");
+            targetElement.value = `${year}-${month}-${day}`;
+          } else {
+            targetElement.value = "";
+          }
+        }
+        // If source is a date field and target is a text field
+        else {
+          if (sourceElement.value) {
+            const dateParts = sourceElement.value.split("-");
+            if (dateParts.length === 3) {
+              targetElement.value = `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}`;
+            }
+          } else {
+            targetElement.value = "";
+          }
+        }
+      }
+
+      /**
+       * Parses a date input in various formats
+       * @param {string} dateString - The input date string
+       * @returns {Date|null} - A valid Date object or null
+       */
+      function parseDateInput(dateString) {
+        if (!dateString) return null;
+
+        // Try DD.MM.YYYY format
+        if (dateString.includes(".")) {
+          const parts = dateString.split(".");
+          if (parts.length === 3) {
+            // Convert to YYYY-MM-DD for date constructor
+            const year = parseInt(parts[2], 10);
+            const month = parseInt(parts[1], 10) - 1; // 0-indexed
+            const day = parseInt(parts[0], 10);
+
+            const date = new Date(year, month, day);
+            if (!isNaN(date.getTime())) {
+              return date;
+            }
+          }
+        }
+
+        // Try direct parsing (handles ISO format)
+        const date = new Date(dateString);
+        return !isNaN(date.getTime()) ? date : null;
+      }
+
+      /**
+       * Logs search operations to track user filtering behavior
+       */
+      function logSearchAction() {
+        // Get search field values
+        const filterCustomer = document
+          .getElementById("filter-customer")
+          .value.trim();
+        const filterTitle = document
+          .getElementById("filter-title")
+          .value.trim();
+        const filterAuthor = document
+          .getElementById("filter-author")
+          .value.trim();
+        const filterLoanDate = document
+          .getElementById("filter-loan-date-text")
+          .value.trim();
+        const filterReturnDate = document
+          .getElementById("filter-return-date-text")
+          .value.trim();
+        const filterBookId = document
+          .getElementById("filter-book-id")
+          .value.trim();
+
+        // Count visible rows after filtering
+        const visibleRows = [
+          ...document.querySelectorAll("#loans-table-body tr"),
+        ].filter((row) => row.style.display !== "none").length;
+
+        // Build search criteria text
+        const searchParams = {};
+        if (filterCustomer) searchParams.customer = filterCustomer;
+        if (filterTitle) searchParams.title = filterTitle;
+        if (filterAuthor) searchParams.author = filterAuthor;
+        if (filterLoanDate) searchParams.loanDate = filterLoanDate;
+        if (filterReturnDate) searchParams.returnDate = filterReturnDate;
+        if (filterBookId) searchParams.bookId = filterBookId;
+
+        // Only send if we have criteria (even empty searches should be logged)
+        const hasAnyCriteria = Object.keys(searchParams).length > 0;
+
+        fetch("/api/log_search", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            pageType: "loans",
+            searchParams: searchParams,
+            resultCount: visibleRows,
+            totalRecords: allLoans.length,
+            isFiltered: hasAnyCriteria,
+          }),
+        }).catch((err) => console.error("Error logging search:", err));
+      }
+
+      // Create debounced logging function
+      const debouncedLogSearch = debounce(logSearchAction, 1000);
+
+      /**
+       * Initialize page functionality
+       */
+      window.onload = function () {
+        fetchLoans();
+
+        const debouncedFilterTable = debounce(filterTable, 300);
+
+        // Set up event listeners for all search fields
+        document
+          .getElementById("filter-customer")
+          .addEventListener("input", debouncedFilterTable);
+        document
+          .getElementById("filter-title")
+          .addEventListener("input", debouncedFilterTable);
+        document
+          .getElementById("filter-author")
+          .addEventListener("input", debouncedFilterTable);
+        document
+          .getElementById("filter-book-id")
+          .addEventListener("input", debouncedFilterTable);
+        document
+          .getElementById("filter-loan-date-text")
+          .addEventListener("input", debouncedFilterTable);
+        document
+          .getElementById("filter-return-date-text")
+          .addEventListener("input", debouncedFilterTable);
+
+        // Add helpful placeholder text to date fields
+        document.querySelectorAll('input[type="date"]').forEach((input) => {
+          input.setAttribute("placeholder", "DD.MM.YYYY");
+          input.setAttribute("title", "Enter date in DD.MM.YYYY format");
+        });
+      };
+    </script>
+
+    <!-- Bootstrap JS dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

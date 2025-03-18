@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About My Project</title>
+    <!-- Bootstrap 5.3 CSS with integrity attribute -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+    <style>
+      /* Set a beige background similar to the homepage */
+      html,
+      body {
+        min-height: 100vh;
+        margin: 0;
+        background-color: #f5f5dc;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      /* Header styling */
+      .header {
+        padding: 10px;
+        background-color: #c2b280;
+        margin-bottom: 5px;
+        text-align: center;
+      }
+      .header h1 {
+        font-family: Arial, sans-serif;
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #333;
+      }
+      /* Content styling */
+      .content {
+        padding: 20px;
+        background-color: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin: 20px auto;
+        max-width: 800px;
+        font-family: Arial, sans-serif;
+        color: #555;
+        flex: 1 0 auto;
+      }
+      .content h2 {
+        color: #333;
+        margin-top: 20px;
+      }
+      .content p {
+        font-size: 1.1rem;
+        line-height: 1.6;
+      }
+      .content ul {
+        padding-left: 20px;
+        font-size: 1.1rem;
+      }
+      .content a {
+        color: #0d6efd; /* Bootstrap 5.3 primary color */
+        text-decoration: none;
+      }
+      .content a:hover {
+        text-decoration: underline;
+      }
+      /* Footer styling - sticky approach instead of fixed */
+      footer {
+        padding: 10px;
+        background-color: #e0d8c3;
+        text-align: center;
+        font-family: Arial, sans-serif;
+        width: 100%;
+        color: #333;
+        margin-top: auto; /* Push to bottom */
+        flex-shrink: 0;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 576px) {
+        body {
+          padding: 0 10px;
+        }
+        .header h1 {
+          font-size: 2rem;
+        }
+        .content {
+          margin: 10px auto;
+          padding: 15px;
+          max-width: 100%;
+        }
+        .content h2 {
+          font-size: 1.5rem;
+        }
+        .content p,
+        .content ul {
+          font-size: 1rem;
+        }
+        footer {
+          font-size: 0.9rem;
+          padding: 8px;
+        }
+      }
+
+      @media (min-width: 577px) and (max-width: 768px) {
+        .header h1 {
+          font-size: 2.2rem;
+        }
+        .content {
+          padding: 18px;
+        }
+        .content h2 {
+          font-size: 1.7rem;
+        }
+        .content p,
+        .content ul {
+          font-size: 1.05rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header Section -->
+    <header class="header">
+      <div class="container">
+        <h1>About My Project</h1>
+      </div>
+    </header>
+
+    <!--  Navigation -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
+      <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="btn btn-link" href="homepage.html">Homepage</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content Section -->
+    <div class="content">
+      <section>
+        <h2>My History</h2>
+        <p>
+          My name is Sharon Ben-Dror. I have been working in computing for about
+          15 years, primarily on interfaces and systems for banking software.
+        </p>
+      </section>
+
+      <section>
+        <h2>My Mission</h2>
+        <p>
+          This is an academic project as part of a Full Stack Python Development
+          course that was delivered in person at John Bryce School in Tel Aviv,
+          Israel. The software was developed using various tools and
+          technologies learned in the course, primarily using Flask as the
+          backend framework, alongside Python, JavaScript, and HTML, among
+          others. The software was originally developed from scratch without
+          using any external code.
+        </p>
+        <p>
+          The software includes all stages of borrowing in a standard library
+          using CRUD (create, read, update, and delete) operations and a
+          database that comprises dozens of customers and dozens of books.
+          Instead of permanent deletion, the "delete" operation is implemented
+          as a soft delete, temporarily deactivating or disabling records rather
+          than removing them permanently. The library page caters to three
+          audiences: librarians, customers, and developers – each with unique
+          usernames and passwords.
+        </p>
+      </section>
+
+      <section>
+        <h2>Contact</h2>
+        <p>
+          Sharon Ben-Dror<br />
+          Email: <a href="mailto:sharon_bd@walla.com">sharon_bd@walla.com</a>
+        </p>
+      </section>
+    </div>
+
+    <!-- Footer Section -->
+    <footer>
+      <p>© 2025 Sharon Ben Dror. All rights reserved.</p>
+    </footer>
+
+    <!-- Load scripts asynchronously -->
+    <script>
+      function loadScripts() {
+        const scripts = [
+          {
+            src: "https://code.jquery.com/jquery-3.6.0.slim.min.js",
+            integrity: "sha384-Qg00WFl9r0Xr6rUqNLv1ffTSSKEFFCDCKVQwwxPoFUwEBaJvz5WQR5XkM1G1WVdCO",
+            crossorigin: "anonymous",
+          },
+          {
+            src: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js",
+            crossorigin: "anonymous",
+          },
+        ];
+
+        scripts.forEach((scriptData) => {
+          const script = document.createElement("script");
+          script.src = scriptData.src;
+          if (scriptData.integrity) {
+            script.integrity = scriptData.integrity;
+          }
+          script.crossOrigin = scriptData.crossorigin;
+          script.async = true;
+          document.body.appendChild(script);
+        });
+      }
+
+      // Load scripts after DOMContentLoaded
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", loadScripts);
+      } else {
+        loadScripts();
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Book</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
+    <style>
+      .header {
+        padding: 10px;
+        background-color: #c2b280;
+        margin-bottom: 20px;
+      }
+      .content {
+        padding: 20px;
+      }
+      .type-1 {
+        background-color: #d1e7dd;
+      }
+      .type-2 {
+        background-color: #fff3cd;
+      }
+      .type-3 {
+        background-color: #e0bbf1;
+      }
+      .form-group select {
+        width: 100%;
+      }
+      /* CSS for Bootstrap 5.3 compatibility */
+      .mb-3 select {
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <h1 class="text-center">Add Book</h1>
+      </div>
+    </header>
+    <!-- Navbar with Bootstrap 5.3 styling -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container">
+        <!-- Navbar toggle button with Bootstrap 5 attributes -->
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav d-flex flex-wrap">
+            <li class="nav-item">
+              <a class="btn btn-link" href="homepage.html">Homepage</a>
+            </li>
+            <li class="nav-item">
+              <a href="loan_book.html" class="btn btn-link">Loan a Book</a>
+            </li>
+            <li class="nav-item">
+              <a href="return_book.html" class="btn btn-link">Return Book</a>
+            </li>
+            <li class="nav-item">
+              <a href="loans.html" class="btn btn-link">Loans</a>
+            </li>
+            <li class="nav-item">
+              <a href="add_customer.html" class="btn btn-link">Add Customer</a>
+            </li>
+            <li class="nav-item">
+              <a href="customers_list.html" class="btn btn-link">Customers List</a>
+            </li>
+            <li class="nav-item">
+              <a href="books_list.html" class="btn btn-link">Books List</a>
+            </li>
+            <li class="nav-item">
+              <a href="remove_book.html" class="btn btn-link">Remove Book</a>
+            </li>
+            <li class="nav-item">
+              <a href="late_loans.html" class="btn btn-link">Late Loans</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Form with Bootstrap 5.3 styling -->
+    <main class="content">
+      <div class="container">
+        <form id="add-book-form">
+          <div class="mb-3">
+            <label for="title" class="form-label">Book Title</label>
+            <input type="text" class="form-control" id="title" required />
+          </div>
+          <div class="mb-3">
+            <label for="author" class="form-label">Author</label>
+            <input type="text" class="form-control" id="author" required />
+          </div>
+          <div class="mb-3">
+            <label for="year_published" class="form-label">Year Published</label>
+            <input
+              type="number"
+              class="form-control"
+              id="year_published"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="type" class="form-label">Type</label>
+            <select class="form-select" id="type" required>
+              <option value="" disabled selected>Select book type</option>
+              <option value="1" class="type-1" data-period="10">
+                Up to 10 days loan (TYPE 1)
+              </option>
+              <option value="2" class="type-2" data-period="5">
+                Up to 5 days loan (TYPE 2)
+              </option>
+              <option value="3" class="type-3" data-period="2">
+                Up to 2 days loan (TYPE 3)
+              </option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">Add Book</button>
+        </form>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script>
+      // Add page load logging
+      document.addEventListener("DOMContentLoaded", function() {
+        // Log page load
+        fetch("/api/log_action", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action_type: "page_load",
+            page: "add_book.html",
+            details: {}
+          })
+        }).catch(error => console.error("Error logging action:", error));
+      });
+
+      // Modify the form submit handler to include logging
+      document
+        .getElementById("add-book-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const title = document.getElementById("title").value;
+          const author = document.getElementById("author").value;
+          const yearPublished = document.getElementById("year_published").value;
+          const typeElement = document.getElementById("type");
+          const type = typeElement.value;
+          
+          // loan period conversion - ensure a number
+          let loanPeriod = typeElement.options[typeElement.selectedIndex].getAttribute("data-period");
+          loanPeriod = parseInt(loanPeriod, 10); // Convert to integer
+          
+          console.log("Adding book with loan period:", loanPeriod); // Debug log
+          
+          // Log the book addition attempt
+          fetch("/api/log_action", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action_type: "book_addition_attempt",
+              page: "add_book.html",
+              details: {
+                title: title,
+                author: author,
+                year_published: yearPublished,
+                type: type,
+                loan_period: loanPeriod
+              }
+            })
+          }).catch(error => console.error("Error logging action:", error));
+
+          fetch("/api/add_book", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title: title.replace(/"/g, '\\"'), // Escape double quotes
+              author: author,
+              year_published: yearPublished,
+              type: type,
+              loan_period: loanPeriod,  // Integer value representing days
+            }),
+          })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // Log the response from server including loan_period value
+            console.log("Server response:", data);
+            
+            if (data.success) {
+              // Log successful book addition
+              fetch("/api/log_action", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  action_type: "book_added_successfully",
+                  page: "add_book.html",
+                  details: {
+                    title: title,
+                    author: author,
+                    year_published: yearPublished,
+                    type: type,
+                    loan_period: data.loan_period || loanPeriod,  // Use the loan period returned from server
+                    book_id: data.book_id
+                  }
+                })
+              }).catch(error => console.error("Error logging action:", error));
+              
+              Toastify({
+                text: `Book added successfully with loan period: ${data.loan_period || loanPeriod} days`,
+                duration: 3000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#28a745",
+              }).showToast();
+              document.getElementById("add-book-form").reset();
+            } else {
+              // Handle error responses here
+            }
+          })
+          .catch((error) => {
+            // Log error during book addition
+            fetch("/api/log_action", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                action_type: "book_addition_error",
+                page: "add_book.html",
+                details: {
+                  title: title,
+                  author: author,
+                  error: error.message
+                }
+              })
+            }).catch(error => console.error("Error logging action:", error));
+            
+            Toastify({
+              text: "Error adding book: " + error.message,
+              duration: 5000,
+              close: true,
+              gravity: "top",
+              position: "right",
+              backgroundColor: "#007bff",
+            }).showToast();
+          });
+        });
+    </script>
+  </body>
+</html>

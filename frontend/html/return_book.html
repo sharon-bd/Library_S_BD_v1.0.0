@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Return Book</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Toastify CSS -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+      .header {
+        padding: 10px;
+        background-color: #c2b280;
+        margin-bottom: 20px;
+      }
+
+      /* Styles for the search container (display: table) */
+      .search-container {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+      }
+      .search-cell {
+        display: table-cell;
+        vertical-align: bottom; /* Align inputs to bottom */
+        padding: 0 4px;
+        position: relative; /* For absolute positioning of labels */
+      }
+      .date-label {
+        position: absolute;
+        top: -20px; /* Push label up */
+        left: 4px;
+        font-size: 14px;
+        color: #333;
+      }
+      .search-input {
+        width: 100%;
+        border-radius: 0.5rem; /* Increased rounding for a softer, more refined look */
+        height: 40px; /* Consistent height for all search fields */
+        padding: 8px 12px; /* Adjusted padding for better spacing */
+        box-sizing: border-box; /* Ensure padding doesn't affect overall width */
+        border: 2px solid #ced4da; /* Softer gray border for a refined appearance */
+        background-color: #ffffff; /* White background for contrast */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+        transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover/focus */
+      }
+      .search-input:focus {
+        outline: none; /* Remove default outline */
+        border-color: #80bdff; /* Light blue border on focus for interactivity */
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.3); /* Subtle focus glow */
+      }
+      .search-input:hover {
+        border-color: #80bdff; /* Light blue border on hover for interactivity */
+        box-shadow: 0 2px 6px rgba(0, 123, 255, 0.2); /* Enhanced shadow on hover */
+      }
+
+      /* Table styles for alternating row colors and darkened gray borders */
+      .table {
+        background-color: #fff;
+        border: 1px solid #808080; /* Darker gray border for the table */
+      }
+      .table th,
+      .table td {
+        border: 1px solid #808080; /* Darker gray borders for table cells */
+      }
+      .table tr:nth-child(3n + 1) {
+        /* Color 1: Very light brown, warm and soft, pleasant to the eye */
+        background-color: #e8dfd7; /* Slightly darkened very light brown, warm and subtle */
+      }
+      .table tr:nth-child(3n + 2) {
+        /* Color 2: Light brown, warm and pleasant */
+        background-color: #d8c9b9; /* Slightly darkened light brown, warm and soothing */
+      }
+      .table tr:nth-child(3n + 3) {
+        /* Color 3: Medium brown, still bright and pleasant */
+        background-color: #c9b099; /* Slightly darkened medium brown, light and harmonious */
+      }
+      .table th {
+        background-color: #f4f4f4; /* Keep header background light gray for contrast */
+        color: #333;
+      }
+      .table thead th {
+        padding-bottom: 1.5em; /* Increase vertical space below table header */
+      }
+      /* Increase the gap below header cells and add a thick black border between header and table body */
+      .table thead {
+        border-bottom: 3px solid rgb(104, 99, 99); /* thick black line */
+      }
+      .table thead th {
+        padding-bottom: 1.5em; /* additional spacing */
+      }
+
+      /* Styles for overdue and due-today dates */
+      .overdue-date {
+        color: #b71c1c !important; /* Dark red color */
+        font-weight: bold !important;
+      }
+
+      .due-today-custom {
+        color: orange; /* Text color */
+        -webkit-text-stroke: 1px black;
+        font-weight: bold;
+      }
+
+      .due-today-dark {
+        color: #ce7100; /* Dark orange */
+        font-weight: bold;
+      }
+
+      /* Styles for standard toast notifications */
+      .toast-success {
+        background: linear-gradient(to right, #28a745, #20c997) !important;
+        color: white;
+        border-radius: 6px;
+        padding: 12px 20px;
+        font-size: 1rem;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        text-align: center;
+      }
+
+      .toast-error {
+        background: linear-gradient(to right, #dc3545, #c82333) !important;
+        color: white;
+        border-radius: 6px;
+        padding: 12px 20px;
+        font-size: 1rem;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        text-align: center;
+      }
+
+      /* Style for late return notification */
+      .toast-late {
+        background: #b71c1c !important;
+        color: white;
+        border-radius: 6px;
+        padding: 20px;
+        font-size: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        min-width: 300px;
+      }
+
+      /* Style for OK button in late return notification */
+      .toast-button {
+        background-color: #1565c0;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 10px 20px;
+        margin-top: 15px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.2s;
+      }
+      .toast-button:hover {
+        background-color: #0d47a1;
+      }
+
+      .toast-info {
+        background: linear-gradient(to right, #17a2b8, #138496) !important;
+        color: white;
+        border-radius: 6px;
+        padding: 12px 20px;
+        font-size: 1rem;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="header">
+      <div class="container">
+        <h1 class="text-center">Return Book</h1>
+      </div>
+    </header>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav d-flex flex-wrap">
+            <li class="nav-item">
+              <a class="btn btn-link" href="../html/homepage.html">Homepage</a>
+            </li>
+            <li class="nav-item">
+              <a href="loan_book.html" class="btn btn-link">Loan a Book</a>
+            </li>
+            <li class="nav-item">
+              <a href="loans.html" class="btn btn-link">Loans</a>
+            </li>
+            <li class="nav-item">
+              <a href="add_customer.html" class="btn btn-link">Add Customer</a>
+            </li>
+            <li class="nav-item">
+              <a href="customers_list.html" class="btn btn-link"
+                >Customers List</a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="add_book.html" class="btn btn-link">Add Book</a>
+            </li>
+            <li class="nav-item">
+              <a href="books_list.html" class="btn btn-link">Books List</a>
+            </li>
+            <li class="nav-item">
+              <a href="remove_book.html" class="btn btn-link">Remove Book</a>
+            </li>
+            <li class="nav-item">
+              <a href="late_loans.html" class="btn btn-link">Late Loans</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Search Container -->
+    <div class="container-fluid mt-4">
+      <!-- Search row (8 cells = 8 columns) -->
+      <div class="search-container">
+        <!-- # (4ch) -->
+        <div class="search-cell" style="width: 4ch"></div>
+
+        <!-- Book ID (80px) -->
+        <div class="search-cell" style="width: 80px">
+          <input
+            type="text"
+            id="searchBookId"
+            class="search-input"
+            oninput="debouncedFilterLoans()"
+            placeholder="Book ID"
+          />
+        </div>
+
+        <!-- Title (200px) -->
+        <div class="search-cell" style="width: 200px">
+          <input
+            type="text"
+            id="searchTitle"
+            class="search-input"
+            oninput="debouncedFilterLoans()"
+            placeholder="Title"
+          />
+        </div>
+
+        <!-- Author (120px) -->
+        <div class="search-cell" style="width: 120px">
+          <input
+            type="text"
+            id="searchAuthor"
+            class="search-input"
+            oninput="debouncedFilterLoans()"
+            placeholder="Author"
+          />
+        </div>
+
+        <!-- Loan Date (120px) -->
+        <div class="search-cell" style="width: 120px">
+          <div style="margin-bottom: 5px; font-size: 14px">Loan Date</div>
+          <input
+            type="text"
+            id="filter-loan-date-text"
+            class="search-input date-input"
+            oninput="debouncedFilterLoans()"
+            placeholder="DD.MM.YYYY"
+          />
+        </div>
+
+        <!-- Due Date (120px) -->
+        <div class="search-cell" style="width: 120px">
+          <div style="margin-bottom: 5px; font-size: 14px">Due Date</div>
+          <input
+            type="text"
+            id="filter-return-date-text"
+            class="search-input date-input"
+            oninput="debouncedFilterLoans()"
+            placeholder="DD.MM.YYYY"
+          />
+        </div>
+
+        <!-- Customer Name (150px) -->
+        <div class="search-cell" style="width: 150px">
+          <input
+            type="text"
+            id="searchCustomer"
+            class="search-input"
+            oninput="debouncedFilterLoans()"
+            placeholder="Customer Name"
+          />
+        </div>
+
+        <!-- Actions (80px) -->
+        <div class="search-cell" style="width: 80px"></div>
+      </div>
+
+      <!-- Clear Button -->
+      <div class="d-flex justify-content-end mt-2 mb-2">
+        <button type="button" class="btn btn-success" onclick="clearSearch()">
+          Clear
+        </button>
+      </div>
+    </div>
+
+    <!-- The Table -->
+    <div class="container-fluid">
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th style="width: 4ch"><strong>#</strong></th>
+            <th style="width: 80px">Book ID</th>
+            <th style="width: 200px">Title</th>
+            <th style="width: 120px">Author</th>
+            <th style="width: 120px">Loan Date</th>
+            <th style="width: 120px">Due Date</th>
+            <th style="width: 150px">Customer Name</th>
+            <th style="width: 80px">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="books-table-body"></tbody>
+      </table>
+    </div>
+
+    <!-- Toastify Script -->
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      // Store all loans data
+      window.allLoans = [];
+
+      // Limits filter frequency
+      function debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+      }
+
+      // Filter function with 300ms delay
+      const debouncedFilterLoans = debounce(filterLoans, 300);
+
+      // Formats a date in DD.MM.YYYY format
+      function formatDate(dateString) {
+        if (!dateString) return "N/A";
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return "N/A";
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = date.getFullYear();
+        return `${day}.${month}.${year}`;
+      }
+
+      // Retrieves all active loans
+      function getAllLoans() {
+        fetch("/api/loans")
+          .then((response) => response.json())
+          .then((data) => {
+            // Sort loans by loan_date first, then by return_date when loan_dates match
+            window.allLoans = Array.isArray(data.loans)
+              ? data.loans.sort((a, b) => {
+                  // Compare Loan Dates first
+                  const loanDateA = new Date(a.loan_date || "9999-12-31");
+                  const loanDateB = new Date(b.loan_date || "9999-12-31");
+
+                  // If loan dates are different, sort by them
+                  if (loanDateA.getTime() !== loanDateB.getTime()) {
+                    return loanDateA - loanDateB;
+                  }
+
+                  // If loan dates are equal, sort by return dates
+                  const returnDateA = new Date(a.return_date || "9999-12-31");
+                  const returnDateB = new Date(b.return_date || "9999-12-31");
+                  return returnDateA - returnDateB;
+                })
+              : [];
+            renderLoans(window.allLoans);
+          })
+          .catch((error) => {
+            showToast(`Error fetching loans: ${error.message}`, "toast-error");
+          });
+      }
+
+      // Populates table with formatted loan data
+      function renderLoans(loansArray) {
+        const tableBody = document.getElementById("books-table-body");
+        tableBody.innerHTML = "";
+
+        if (!loansArray.length) {
+          tableBody.innerHTML = `
+            <tr id="no-results-message">
+              <td colspan="8" class="text-center">No results found.</td>
+            </tr>`;
+          return;
+        }
+
+        loansArray.forEach((loan, index) => {
+          const row = document.createElement("tr");
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+
+          // Check return date
+          const returnDate = loan.return_date
+            ? new Date(loan.return_date)
+            : null;
+          if (returnDate) {
+            returnDate.setHours(0, 0, 0, 0);
+          }
+
+          const isOverdue = returnDate && returnDate < today;
+          const isDueToday =
+            returnDate && returnDate.getTime() === today.getTime();
+          const returnDateLabel = loan.return_date
+            ? formatDate(loan.return_date)
+            : "N/A";
+
+          // Choose suffix for Due Date
+          const labelSuffix = isDueToday
+            ? ' <span class="due-today-dark">( Today )</span>'
+            : isOverdue
+            ? " <span class='overdue-date'>(Overdue)</span>"
+            : "";
+
+          // Format for dates - if Due Today, format in bold black
+          const loanDateContent = loan.loan_date
+            ? formatDate(loan.loan_date)
+            : "N/A";
+          const dateContent = isDueToday
+            ? `<strong style="color: black;">${loanDateContent}</strong>`
+            : loanDateContent;
+
+          const returnDateClass = isOverdue ? "overdue-date" : "";
+
+          // Helper function to wrap text in <strong> if Due Today
+          const cellFormatter = (text) =>
+            isDueToday ? `<strong>${text}</strong>` : text;
+
+          row.innerHTML = `
+            <td><strong>${index + 1}.</strong></td>
+            <td>${cellFormatter(loan.book_id || "N/A")}</td>
+            <td>${cellFormatter(loan.book_title || "N/A")}</td>
+            <td>${cellFormatter(loan.book_author || "N/A")}</td>
+            <td data-date="${loan.loan_date ? formatDate(loan.loan_date) : ""}">
+              ${cellFormatter(
+                loan.loan_date ? formatDate(loan.loan_date) : "N/A"
+              )}
+            </td>
+            <td data-date="${
+              loan.return_date ? formatDate(loan.return_date) : ""
+            }" class="${returnDateClass}">
+              ${cellFormatter(
+                loan.return_date ? formatDate(loan.return_date) : "N/A"
+              )}${labelSuffix}
+            </td>
+            <td>${cellFormatter(loan.customer_name || "N/A")}</td>
+            <td>
+              <button class="btn btn-danger" onclick="returnBook(${loan.id})">
+                Return
+              </button>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+      }
+
+      // Function to process book return and handle notifications
+      function returnBook(loanId) {
+        // Show processing message
+        showToast("Processing return...", "toast-info");
+
+        fetch(`/api/returnBook/${loanId}`, { method: "POST" })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              // Get the book details from the table row for logging
+              const row = document
+                .querySelector(`button[onclick="returnBook(${loanId})"]`)
+                .closest("tr");
+              const bookId = row.cells[1].textContent.trim();
+              const title = row.cells[2].textContent.trim();
+              const author = row.cells[3].textContent.trim();
+              const customerName = row.cells[6].textContent.trim();
+
+              // Log additional return details
+              logReturnAction({
+                loanId,
+                bookId,
+                title,
+                author,
+                customerName,
+                isLate: data.is_late,
+                daysOnLoan: data.days_on_loan,
+                daysOverdue: data.days_overdue,
+              });
+
+              if (data.is_late) {
+                showLateReturnNotification(data.days_overdue);
+              } else {
+                showToast(
+                  `Book "${title}" returned successfully after ${data.days_on_loan} days`,
+                  "toast-success"
+                );
+              }
+              getAllLoans();
+            } else {
+              showToast(`Error: ${data.message}`, "toast-error");
+            }
+          })
+          .catch((error) => {
+            showToast(`Error returning book: ${error.message}`, "toast-error");
+          });
+      }
+
+      // Enhanced late return notification that shows days overdue
+      function showLateReturnNotification(daysOverdue) {
+        Toastify({
+          text: `Late return!!! (${daysOverdue} days overdue)`,
+          duration: -1, // Stay until dismissed
+          close: false,
+          gravity: "top",
+          position: "center",
+          className: "toast-late",
+          stopOnFocus: true,
+        }).showToast();
+
+        // Add OK button after toast is created
+        setTimeout(() => {
+          const toastElement = document.querySelector(".toastify");
+          if (toastElement) {
+            const okButton = document.createElement("button");
+            okButton.innerText = "OK";
+            okButton.className = "toast-button";
+            okButton.onclick = function () {
+              document.querySelector(".toastify").remove();
+            };
+            toastElement.appendChild(okButton);
+          }
+        }, 100);
+      }
+
+      // Log return actions
+      function logReturnAction(returnDetails) {
+        fetch("/api/log_action", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            action_type: returnDetails.isLate
+              ? "late_book_return"
+              : "book_return",
+            page: "return_book",
+            details: {
+              loan_id: returnDetails.loanId,
+              book_id: returnDetails.bookId,
+              title: returnDetails.title,
+              author: returnDetails.author,
+              customer_name: returnDetails.customerName,
+              days_on_loan: returnDetails.daysOnLoan,
+              days_overdue: returnDetails.daysOverdue,
+            },
+          }),
+        }).catch((error) =>
+          console.error("Error logging return action:", error)
+        );
+      }
+
+      // Applies multiple search filters with partial matching
+      function filterLoans() {
+        const searchBookId = document
+          .getElementById("searchBookId")
+          .value.toLowerCase();
+        const searchTitle = document
+          .getElementById("searchTitle")
+          .value.toLowerCase();
+        const searchAuthor = document
+          .getElementById("searchAuthor")
+          .value.toLowerCase();
+        const searchLoanDate = document.getElementById(
+          "filter-loan-date-text"
+        ).value;
+        const searchReturnDate = document.getElementById(
+          "filter-return-date-text"
+        ).value;
+        const searchCustomer = document
+          .getElementById("searchCustomer")
+          .value.toLowerCase();
+
+        const filtered = window.allLoans.filter((loan) => {
+          // Book ID - partial match
+          if (
+            searchBookId &&
+            !String(loan.book_id).toLowerCase().includes(searchBookId)
+          ) {
+            return false;
+          }
+          // Title - partial match
+          if (
+            searchTitle &&
+            !(loan.book_title || "").toLowerCase().includes(searchTitle)
+          ) {
+            return false;
+          }
+          // Author - partial match
+          if (
+            searchAuthor &&
+            !(loan.book_author || "").toLowerCase().includes(searchAuthor)
+          ) {
+            return false;
+          }
+
+          // Loan Date - Check if displayed date contains search text
+          if (searchLoanDate) {
+            const loanDateFormatted = loan.loan_date
+              ? formatDate(loan.loan_date)
+              : null;
+            if (
+              !loanDateFormatted ||
+              !loanDateFormatted
+                .toLowerCase()
+                .includes(searchLoanDate.toLowerCase())
+            ) {
+              return false;
+            }
+          }
+
+          // Return Date - Check if displayed date contains search text
+          if (searchReturnDate) {
+            const returnDateFormatted = loan.return_date
+              ? formatDate(loan.return_date)
+              : null;
+            if (
+              !returnDateFormatted ||
+              !returnDateFormatted
+                .toLowerCase()
+                .includes(searchReturnDate.toLowerCase())
+            ) {
+              return false;
+            }
+          }
+
+          // Customer - partial match
+          if (
+            searchCustomer &&
+            !(loan.customer_name || "").toLowerCase().includes(searchCustomer)
+          ) {
+            return false;
+          }
+          return true;
+        });
+
+        renderLoans(filtered);
+
+        // Log after search completes (debounced)
+        debouncedLogSearch();
+      }
+
+      function logSearchAction() {
+        // Get search field values
+        const searchBookId = document
+          .getElementById("searchBookId")
+          .value.trim();
+        const searchTitle = document.getElementById("searchTitle").value.trim();
+        const searchAuthor = document
+          .getElementById("searchAuthor")
+          .value.trim();
+        const searchLoanDate = document
+          .getElementById("filter-loan-date-text")
+          .value.trim();
+        const searchReturnDate = document
+          .getElementById("filter-return-date-text")
+          .value.trim();
+        const searchCustomer = document
+          .getElementById("searchCustomer")
+          .value.trim();
+
+        // Build search criteria object
+        const searchParams = {};
+        if (searchBookId) searchParams.bookId = searchBookId;
+        if (searchTitle) searchParams.title = searchTitle;
+        if (searchAuthor) searchParams.author = searchAuthor;
+        if (searchLoanDate) searchParams.loanDate = searchLoanDate;
+        if (searchReturnDate) searchParams.dueDate = searchReturnDate;
+        if (searchCustomer) searchParams.customer = searchCustomer;
+
+        // Get total records count
+        const totalCount = window.allLoans ? window.allLoans.length : 0;
+
+        // Check for "No results found" message in the table
+        const tableBody = document.getElementById("books-table-body");
+        const tableHtml = tableBody.innerHTML.trim();
+        const noResultsFound = tableHtml.includes("No results found");
+
+        // Set visible count to 0 if no results found message is displayed
+        let visibleCount = 0;
+
+        if (!noResultsFound) {
+          // Only count if we don't have the "no results" message
+          const rows = tableBody.getElementsByTagName("tr");
+          visibleCount = rows.length;
+        }
+
+        // Send search data to server for logging
+        fetch("/api/log_search", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            pageType: "returns",
+            searchParams: searchParams,
+            resultCount: visibleCount,
+            totalRecords: totalCount,
+            noResultsShowing: noResultsFound,
+          }),
+        }).catch((err) => console.error("Error logging search:", err));
+      }
+
+      // Create debounced version of the log function to avoid too many requests
+      const debouncedLogSearch = debounce(logSearchAction, 800);
+
+      // Converts YYYY-MM-DD to DD.MM.YYYY format
+      function formatSearchDate(dateString) {
+        if (!dateString) return "";
+        const [year, month, day] = dateString.split("-");
+        return `${day}.${month}.${year}`;
+      }
+
+      // Resets all search fields and refreshes table
+      function clearSearch() {
+        document.getElementById("searchBookId").value = "";
+        document.getElementById("searchTitle").value = "";
+        document.getElementById("searchAuthor").value = "";
+        document.getElementById("filter-loan-date-text").value = "";
+        document.getElementById("filter-return-date-text").value = "";
+        document.getElementById("searchCustomer").value = "";
+        filterLoans();
+
+        // Show confirmation message
+        showToast("Search filters cleared", "toast-success");
+      }
+
+      // Displays toast notifications with specified styling
+      function showToast(message, className) {
+        Toastify({
+          text: message,
+          duration: 5000,
+          close: true,
+          gravity: "top",
+          position: "center",
+          className: className,
+          stopOnFocus: true,
+        }).showToast();
+      }
+
+      // Loads loans data when page opens
+      window.onload = getAllLoans;
+    </script>
+  </body>
+</html>

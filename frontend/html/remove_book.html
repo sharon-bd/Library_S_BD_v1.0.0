@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mark Book as Inactive</title>
+    <!-- Bootstrap 5.3 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+      .header {
+        padding: 10px;
+        background-color: #c2b280;
+        margin-bottom: 20px;
+      }
+      .search-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      /* Adjust field widths */
+      #search-id {
+        width: 85px; /* Compact width setting for Book ID field */
+        flex-shrink: 0; /* Prevent shrinking */
+      }
+      #search-year {
+        width: 130px; 
+        flex-shrink: 0; /* Prevent shrinking */
+      }
+      #search-title,
+      #search-author {
+        flex-grow: 1; 
+        flex-shrink: 1; /* Allow shrinking if necessary */
+      }
+      .btn-clear {
+        background-color: #0d6efd;
+        color: white;
+        /* Remove display: block; */
+        margin-bottom: 10px;
+      }
+      .clear-button-container {
+        display: flex;
+        justify-content: flex-end; /* This aligns the button to the right */
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header Section -->
+    <header class="header">
+      <div class="container">
+        <h1 class="text-center">Remove Book</h1>
+      </div>
+    </header>
+
+    <!-- Navigation Section -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav d-flex flex-wrap">
+            <li class="nav-item">
+              <a class="btn btn-link" href="../html/homepage.html">Homepage</a>
+            </li>
+            <li class="nav-item">
+              <a href="loan_book.html" class="btn btn-link"
+                >Loan a Book</a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="return_book.html" class="btn btn-link"
+                >Return Book</a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="loans.html" class="btn btn-link">Loans</a>
+            </li>
+            <li class="nav-item">
+              <a href="add_customer.html" class="btn btn-link"
+                >Add Customer</a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="customers_list.html" class="btn btn-link"
+                >Customers List</a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="add_book.html" class="btn btn-link"
+                >Add Book</a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="books_list.html" class="btn btn-link"
+                >Books List</a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="late_loans.html" class="btn btn-link"
+                >Late Loans</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content Section -->
+    <div class="container mt-4">
+      <div class="search-row">
+        <input
+          type="text"
+          id="search-id"
+          placeholder="Book ID"
+          class="form-control"
+        />
+        <input
+          type="text"
+          id="search-title"
+          placeholder="Title"
+          class="form-control"
+        />
+        <input
+          type="text"
+          id="search-author"
+          placeholder="Author"
+          class="form-control"
+        />
+        <input
+          type="text"
+          id="search-year"
+          placeholder="Year Published"
+          class="form-control"
+        />
+      </div>
+      <div class="clear-button-container">
+        <button class="btn btn-clear" onclick="refreshPage()">
+          Clear Fields
+        </button>
+      </div>
+      <table class="table table-bordered mt-3">
+        <thead>
+          <tr>
+            <th>Book ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Year Published</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="books-table-body"></tbody>
+      </table>
+    </div>
+
+    <!-- Bootstrap 5.3 Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Toastify JS -->
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    
+    <script>
+      // Debounce function for search input
+      function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+      }
+
+      // Function to log actions to the server
+      function logAction(actionType, details = {}) {
+        fetch("/api/log_action", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action_type: actionType,
+            details: details,
+            page: "remove_book.html"
+          })
+        }).catch(error => console.error("Error logging action:", error));
+      }
+
+      // Modified searchBooks function with proper results logging
+      function searchBooks() {
+        // Get search criteria
+        const searchCriteria = {
+          id: document.getElementById("search-id").value,
+          title: document.getElementById("search-title").value,
+          author: document.getElementById("search-author").value,
+          year: document.getElementById("search-year").value
+        };
+        
+        // Only log search action if criteria exists
+        const hasCriteria = Object.values(searchCriteria).some(v => v.trim() !== "");
+        if (hasCriteria) {
+          logAction("search", searchCriteria);
+        }
+      
+        fetch("/api/books")
+          .then((response) => response.json())
+          .then((data) => {
+            const id = document.getElementById("search-id").value.toLowerCase();
+            const title = document.getElementById("search-title").value.toLowerCase();
+            const author = document.getElementById("search-author").value.toLowerCase();
+            const year = document.getElementById("search-year").value;
+      
+            // Filter books client-side
+            const filteredData = data.filter((book) => {
+              const matchId = id
+                ? String(book.id).toLowerCase().includes(id)
+                : true;
+              const matchTitle = title
+                ? book.title.toLowerCase().includes(title)
+                : true;
+              const matchAuthor = author
+                ? book.author.toLowerCase().includes(author)
+                : true;
+              const matchYear = year
+                ? String(book.year_published).includes(year)
+                : true;
+              return matchId && matchTitle && matchAuthor && matchYear;
+            });
+      
+            // Log the actual filtered results count with proper API
+            if (hasCriteria) {
+              fetch('/api/log_search', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  pageType: 'remove_book',
+                  searchParams: searchCriteria,
+                  resultCount: filteredData.length, // Actual filtered count
+                  totalRecords: data.length // Total records before filtering
+                })
+              }).catch(err => console.error('Error logging search results:', err));
+            }
+      
+            // Render filtered data
+            const tableBody = document.getElementById("books-table-body");
+            tableBody.innerHTML = "";
+      
+            // Check if any filtered data exists
+            if (filteredData.length === 0) {
+              const noResultsRow = document.createElement("tr");
+              noResultsRow.innerHTML = `<td colspan="5" class="text-center">No books found matching your criteria</td>`;
+              tableBody.appendChild(noResultsRow);
+            } else {
+              filteredData.forEach((book) => {
+                const row = document.createElement("tr");
+                // If the book is active – display Remove button, otherwise display Reactivate button
+                const actionButton = book.is_active
+                  ? `<button class="btn btn-danger" onclick="markAsInactive(${book.id})">Remove</button>`
+                  : `<button class="btn btn-success" onclick="reactivateBook(${book.id})">Reactivate</button>`;
+          
+                row.innerHTML = `
+                  <td>${book.id}</td>
+                  <td>${book.title}</td>
+                  <td>${book.author}</td>
+                  <td>${book.year_published}</td>
+                  <td>${actionButton}</td>
+                `;
+                tableBody.appendChild(row);
+              });
+            }
+          })
+          .catch((error) => {
+            showToast(`Error: ${error.message}`, "red");
+            console.error("Error fetching books:", error);
+          });
+      }
+      
+      // New function to log search results
+      function logSearchResults(searchCriteria, resultCount, totalCount) {
+        // Build criteria string parts
+        const criteriaParts = [];
+        if (searchCriteria.id) criteriaParts.push(`id:${searchCriteria.id}`);
+        if (searchCriteria.title) criteriaParts.push(`title:${searchCriteria.title}`);
+        if (searchCriteria.author) criteriaParts.push(`author:${searchCriteria.author}`);
+        if (searchCriteria.year) criteriaParts.push(`year:${searchCriteria.year}`);
+        
+        // Format criteria string
+        const criteriaText = criteriaParts.length > 0 ? criteriaParts.join(", ") : "None";
+        
+        // Log with proper format
+        fetch('/api/log_search', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            pageType: 'remove_book',
+            searchParams: searchCriteria,
+            resultCount: resultCount,
+            totalRecords: totalCount
+          })
+        }).catch(err => console.error('Error logging search results:', err));
+      }
+
+      // Check if the book is loaned – if there is a record in the loans table with this book
+      function checkIfLoaned(bookId) {
+        return fetch("/api/loans")
+          .then((response) => response.json())
+          .then((data) => {
+            return data.loans.some(
+              (loan) => String(loan.book_id) === String(bookId)
+            );
+          })
+          .catch((error) => {
+            console.error("Error while checking loans:", error);
+            return false;
+          });
+      }
+
+      // Function to clear search fields and update results
+      function refreshPage() {
+        document.getElementById("search-id").value = "";
+        document.getElementById("search-title").value = "";
+        document.getElementById("search-author").value = "";
+        document.getElementById("search-year").value = "";
+        
+        // Log the clear search action
+        logAction("clear_search");
+        
+        // Records reset to show all available books
+        fetch('/api/log_search', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            pageType: 'remove_book',
+            searchParams: {},
+            resultCount: 83, // This should be dynamically fetched in a real implementation
+            totalRecords: 83
+          })
+        }).catch(err => console.error('Error logging search results:', err));
+        
+        searchBooks();
+      }
+
+      function markAsInactive(bookId) {
+        checkIfLoaned(bookId).then((isLoaned) => {
+          if (isLoaned) {
+            showToast(
+              `Cannot remove Book ID ${bookId} - it is currently loaned!`,
+              "red"
+            );
+            
+            // Log the failed deactivation attempt
+            logAction("deactivation_failed", {
+              book_id: bookId,
+              reason: "book_loaned"
+            });
+          } else {
+            // No confirmation dialog - proceed directly
+            fetch(`/api/books/${bookId}`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ is_active: false }),
+            })
+              .then((response) => response.json())
+              .then(() => {
+                showToast(`Book ID ${bookId} has been deactivated!`, "green");
+                
+                // Log the book deactivation
+                logAction("book_status_change", {
+                  book_id: bookId,
+                  is_active: false
+                });
+                
+                // Log to console for additional client-side visibility
+                console.log(
+                  `DEACTIVATION: Book ID ${bookId} marked as inactive`
+                );
+                searchBooks();
+              })
+              .catch((error) => showToast(`Error: ${error.message}`, "red"));
+          }
+        });
+      }
+
+      // Function to update the book status to active
+      function reactivateBook(bookId) {
+        // No confirmation dialog - proceed directly
+        fetch(`/api/books/${bookId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ is_active: true }),
+        })
+          .then((response) => response.json())
+          .then(() => {
+            showToast(`Book ID ${bookId} has been reactivated!`, "green");
+            
+            // Log the book reactivation
+            logAction("book_status_change", {
+              book_id: bookId,
+              is_active: true
+            });
+            
+            // Log to console for additional client-side visibility
+            console.log(`ACTIVATION: Book ID ${bookId} marked as active`);
+            searchBooks();
+          })
+          .catch((error) => showToast(`Error: ${error.message}`, "red"));
+      }
+      
+      // Function to display messages
+      function showToast(message, bgColor) {
+        Toastify({
+          text: message,
+          duration: 4000,
+          close: true,
+          gravity: "top",
+          position: "right",
+          style: { background: bgColor },
+        }).showToast();
+      }
+
+      // Create a debounced version of the search function
+      const debouncedSearch = debounce(searchBooks, 300);
+
+      // Adding event listeners to search fields for real-time search
+      document.addEventListener("DOMContentLoaded", () => {
+        // Log page load
+        logAction("page_load");
+        
+        // Rest of initialization code
+        searchBooks();
+        document
+          .getElementById("search-id")
+          .addEventListener("input", debouncedSearch);
+        document
+          .getElementById("search-title")
+          .addEventListener("input", debouncedSearch);
+        document
+          .getElementById("search-author")
+          .addEventListener("input", debouncedSearch);
+        document
+          .getElementById("search-year")
+          .addEventListener("input", debouncedSearch);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Developers Page</title>
+    <!-- Bootstrap 5.3 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <style>
+      html,
+      body {
+        margin: 0;
+        background-color: #f4f4f4;
+      }
+      .header {
+        padding: 10px;
+        background-color: #c2b280;
+        margin-bottom: 20px;
+      }
+      .navbar-custom {
+        background-color: #f4f4f4;
+      }
+      .content {
+        padding: 20px;
+      }
+      .button-container {
+        margin-top: 20px;
+      }
+      button {
+        margin-right: 10px;
+      }
+      .toggle-btn {
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-left: none;
+        border-radius: 0 5px 5px 0;
+        padding: 0.375rem 0.75rem;
+        color: #000;
+      }
+      .toggle-btn i {
+        font-size: 18px;
+      }
+      .input-group .form-control {
+        border-right: 0;
+      }
+      .enter-btn {
+        background-color: #add8e6; /* Light blue */
+        border: 1px solid #add8e6;
+        color: black;
+        border-radius: 0; /* Square */
+        padding: 0.375rem 0.75rem;
+        font-size: 16px;
+      }
+      .enter-btn:hover {
+        background-color: #9acdd8;
+        border-color: #9acdd8;
+      }
+      .link-bar {
+        display: flex;
+        justify-content: flex-start;
+        background-color: #e0d8c3;
+        padding: 10px 15px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+      }
+
+      .link-bar a {
+        font-size: 1rem;
+        font-weight: normal;
+        text-decoration: none;
+        color: #007bff;
+        padding: 6px 12px;
+        border-radius: 5px;
+        margin-right: 8px;
+      }
+
+      .link-bar a:hover {
+        color: #0056b3;
+        background-color: transparent;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <h1 class="text-center">Developers</h1>
+      </div>
+    </header>
+
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
+      <div class="container">
+        <div class="link-bar">
+          <a href="homepage.html">Homepage</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="content">
+      <div class="container">
+        <div class="button-container">
+          <button
+            id="createDataBtn"
+            class="btn btn-primary"
+            onclick="createTestData()"
+          >
+            <span
+              id="spinner"
+              class="spinner-border spinner-border-sm d-none"
+              role="status"
+              aria-hidden="true"
+            ></span>
+            Reset Database with Test Data
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <div class="container mt-4">
+      <div class="card">
+        <div
+          class="card-header"
+          style="background-color: #c2b280; color: black"
+        >
+          <h4>Access System As Different Roles</h4>
+        </div>
+        <div class="card-body">
+          <div class="mb-4">
+            <h5>1. Access as Librarian</h5>
+            <div class="input-group mb-3" style="max-width: 400px">
+              <input
+                type="password"
+                id="librarianPassword"
+                class="form-control"
+                placeholder="Enter Librarian Password"
+                style="border-right: none"
+              />
+              <div class="input-group-append">
+                <button
+                  class="btn toggle-btn"
+                  type="button"
+                  onclick="togglePassword('librarianPassword', this)"
+                >
+                  <i class="fa fa-eye" aria-hidden="true"></i>
+                </button>
+                <button
+                  class="btn enter-btn"
+                  type="button"
+                  onclick="loginAsLibrarian()"
+                >
+                  Enter
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h5>2. Access as Customer</h5>
+            <div class="form-group">
+              <select id="customerSelect" class="form-select mb-2">
+                <option value="" disabled selected>
+                  Select a customer by email
+                </option>
+              </select>
+            </div>
+            <div class="input-group mb-3" style="max-width: 400px">
+              <input
+                type="password"
+                id="customerPassword"
+                class="form-control"
+                placeholder="Enter Customer Password"
+                style="border-right: none"
+                autocomplete="new-password"
+              />
+              <div class="input-group-append">
+                <button
+                  class="btn toggle-btn"
+                  type="button"
+                  onclick="togglePassword('customerPassword', this)"
+                >
+                  <i class="fa fa-eye" aria-hidden="true"></i>
+                </button>
+                <button
+                  class="btn enter-btn"
+                  type="button"
+                  onclick="loginAsCustomer()"
+                >
+                  Enter
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap 5.3 Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Toastify JS -->
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <script>
+      function loadCustomerList() {
+        // Create a function to handle the token extraction
+        function getToken() {
+          return document.cookie.replace(
+            /(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/,
+            "$1"
+          );
+        }
+
+        const token = getToken();
+
+        // Get all customers
+        fetch("/api/customers?active=true", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+        })
+          .then((response) => response.json())
+          .then((customers) => {
+            const select = document.getElementById("customerSelect");
+            select.innerHTML =
+              '<option value="" disabled selected>Select a customer</option>';
+
+            // Order by name initially for the first render
+            customers.sort((a, b) => a.name.localeCompare(b.name));
+
+            // Create a customer ID map for easier lookup later
+            const customerMap = {};
+            customers.forEach((customer) => {
+              customerMap[customer.id] = customer;
+
+              // Initialize loan count to 0 for each customer
+              customer.loanCount = 0;
+            });
+
+            // Now get the loans
+            return fetch("/api/loans", {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+              },
+            })
+              .then((response) => response.json())
+              .then((loansData) => {
+                const loans = loansData.loans || [];
+
+                // Count loans per customer
+                loans.forEach((loan) => {
+                  // Check both possible ways the customer ID might be represented
+                  const customerId =
+                    typeof loan.cust_id !== "undefined"
+                      ? loan.cust_id
+                      : loan.customer && loan.customer.id
+                      ? loan.customer.id
+                      : null;
+
+                  // If we can't find the customer ID directly, try to extract it from the URL
+                  if (customerId === null && loan.customer_url) {
+                    const idMatch =
+                      loan.customer_url.match(/\/customers\/(\d+)/);
+                    if (idMatch && idMatch[1]) {
+                      const extractedId = parseInt(idMatch[1], 10);
+                      if (customerMap[extractedId]) {
+                        customerMap[extractedId].loanCount++;
+                      }
+                    }
+                  }
+                  // If we have a valid customer ID and it exists in our map
+                  else if (customerId !== null && customerMap[customerId]) {
+                    customerMap[customerId].loanCount++;
+                  }
+                });
+
+                // Convert the map back to an array
+                const updatedCustomers = Object.values(customerMap);
+
+                // Sort customers by loan count (descending)
+                updatedCustomers.sort((a, b) => b.loanCount - a.loanCount);
+
+                // Update the dropdown with counts
+                select.innerHTML =
+                  '<option value="" disabled selected>Select a customer</option>';
+                updatedCustomers.forEach((customer) => {
+                  const option = document.createElement("option");
+                  option.value = customer.id;
+                  option.textContent = `${customer.name} (${customer.email}) - Loaned Books: ${customer.loanCount}`;
+                  option.setAttribute("data-email", customer.email);
+                  select.appendChild(option);
+                });
+              });
+          })
+          .catch((error) => {
+            console.error("Error loading customers:", error);
+            Toastify({
+              text: `Error loading customer list`,
+              duration: 3000,
+              gravity: "top",
+              position: "center",
+              backgroundColor: "red",
+            }).showToast();
+          });
+      }
+
+      function loginAsLibrarian() {
+        const password = document.getElementById("librarianPassword").value;
+        if (!password) {
+          Toastify({
+            text: "Please enter the librarian password.",
+            duration: 3000,
+            gravity: "top",
+            position: "center",
+            backgroundColor: "red",
+          }).showToast();
+          return;
+        }
+        fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: "librarian", password: password }),
+          credentials: "include", // Add this line to include cookies
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              // Display success message
+              Toastify({
+                text: "Logged in as Librarian successfully!",
+                duration: 2000, // 2 seconds
+                gravity: "top",
+                position: "center",
+                backgroundColor: "green",
+              }).showToast();
+
+              // Navigate to books list page
+              setTimeout(() => {
+                // This is correct relative to where your file is located:
+                window.location.href = "books_list.html";
+              }, 1000); // 1 second delay before page transition
+            } else {
+              Toastify({
+                text: `Error: ${data.message || "Invalid password"}`,
+                duration: 3000,
+                gravity: "top",
+                position: "center",
+                backgroundColor: "red",
+              }).showToast();
+            }
+          })
+          .catch((error) => {
+            Toastify({
+              text: "Error during login",
+              duration: 3000,
+              gravity: "top",
+              position: "center",
+              backgroundColor: "red",
+            }).showToast();
+          });
+      }
+
+      function loginAsCustomer() {
+        // Store the developer token before login
+        const developerToken = localStorage.getItem("developer_token");
+
+        const customerSelect = document.getElementById("customerSelect");
+        const customerEmail =
+          customerSelect.options[customerSelect.selectedIndex]?.getAttribute(
+            "data-email"
+          );
+        const customerId = customerSelect.value;
+        const password =
+          document.getElementById("customerPassword").value || "CustPass456"; // Use entered password or default
+
+        // Check if customer is selected
+        if (!customerEmail || !customerId) {
+          Toastify({
+            text: "Please select a customer.",
+            duration: 3000,
+            gravity: "top",
+            position: "center",
+            backgroundColor: "red",
+          }).showToast();
+          return;
+        }
+
+        console.log(`Attempting login for customer: ${customerEmail}`);
+
+        fetch("/api/customer_login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: customerEmail,
+            password: password, // Use the entered password
+          }),
+          credentials: "include", // Include cookies
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Server response:", data);
+            if (data.success) {
+              // Store both tokens to enable navigation back to developer page
+              localStorage.setItem("customer_token", data.token);
+              // If we had a developer token, keep it
+              if (developerToken) {
+                localStorage.setItem("developer_token", developerToken);
+              }
+
+              Toastify({
+                text: "Logged in as Customer successfully!",
+                duration: 2000,
+                gravity: "top",
+                position: "center",
+                backgroundColor: "green",
+              }).showToast();
+
+              //  dev_mode parameter to enable return to developer page
+              document.cookie = `developer_access=true; path=/;`;
+
+              setTimeout(() => {
+                window.location.href = "../user_pages/customer_dashboard.html";
+              }, 1000);
+            } else {
+              // Try again with default password if user entered a different one
+              if (password !== "CustPass456") {
+                console.log("Trying default password...");
+
+                fetch("/api/customer_login", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    email: customerEmail,
+                    password: "CustPass456", // Try default password
+                  }),
+                  credentials: "include",
+                })
+                  .then((response) => response.json())
+                  .then((data) => {
+                    if (data.success) {
+                      // Same success handling as above
+                      localStorage.setItem("customer_token", data.token);
+                      if (developerToken) {
+                        localStorage.setItem("developer_token", developerToken);
+                      }
+
+                      Toastify({
+                        text: "Logged in as Customer successfully!",
+                        duration: 2000,
+                        gravity: "top",
+                        position: "center",
+                        backgroundColor: "green",
+                      }).showToast();
+
+                      document.cookie = `developer_access=true; path=/;`;
+
+                      setTimeout(() => {
+                        window.location.href =
+                          "../user_pages/customer_dashboard.html";
+                      }, 1000);
+                    } else {
+                      Toastify({
+                        text: `Error: ${data.message || "Invalid credentials"}`,
+                        duration: 3000,
+                        gravity: "top",
+                        position: "center",
+                        backgroundColor: "red",
+                      }).showToast();
+                    }
+                  });
+              } else {
+                // Original error handling
+                Toastify({
+                  text: `Error: ${data.message || "Invalid credentials"}`,
+                  duration: 3000,
+                  gravity: "top",
+                  position: "center",
+                  backgroundColor: "red",
+                }).showToast();
+              }
+            }
+          })
+          .catch((error) => {
+            console.error("Login error:", error);
+            Toastify({
+              text: "Error during login: " + error.message,
+              duration: 3000,
+              gravity: "top",
+              position: "center",
+              backgroundColor: "red",
+            }).showToast();
+          });
+      }
+
+      function togglePassword(inputId, button) {
+        const input = document.getElementById(inputId);
+        const icon = button.querySelector("i");
+        if (input.type === "password") {
+          input.type = "text";
+          icon.classList.remove("fa-eye");
+          icon.classList.add("fa-eye-slash");
+        } else {
+          input.type = "password";
+          icon.classList.remove("fa-eye-slash");
+          icon.classList.add("fa-eye");
+        }
+      }
+
+      function getDashboardLink() {
+        // Check for librarian token first
+        if (
+          document.cookie.includes("role=librarian") ||
+          localStorage.getItem("librarian_token")
+        ) {
+          return "books_list.html"; // Librarian dashboard (books list)
+        }
+        // Check for customer token
+        else if (
+          document.cookie.includes("role=customer") ||
+          localStorage.getItem("customer_token")
+        ) {
+          return "../user_pages/customer_dashboard.html"; // Customer dashboard
+        }
+        // Default - go to homepage
+        return "homepage.html";
+      }
+
+      // Update the navigation links
+      document.addEventListener("DOMContentLoaded", function () {
+        // Update the Dashboard link to the correct destination
+        const dashboardLink = document.querySelector(
+          '.link-bar a[href*="dashboard"]'
+        );
+        if (dashboardLink) {
+          dashboardLink.setAttribute("href", getDashboardLink());
+          dashboardLink.addEventListener("click", function (event) {
+            // Prevent default navigation
+            event.preventDefault();
+
+            // Determine correct dashboard based on tokens
+            window.location.href = getDashboardLink();
+          });
+        }
+      });
+    </script>
+    <script>
+      // Consolidates multiple DOMContentLoaded event handlers into one
+
+      // Single DOMContentLoaded event handler to initialize the page
+      document.addEventListener("DOMContentLoaded", function () {
+        // First step: Run the setupDeveloperAuth function to check for dev_mode
+        setupDeveloperAuth();  
+
+        // First task: Clear any conflicting toasts
+        const existingToasts = document.querySelectorAll(".toastify");
+        existingToasts.forEach((toast) => {
+          toast.remove();
+        });
+
+        // Second task: Extract and store the JWT token if present
+        const cookies = document.cookie.split("; ");
+        const accessTokenCookie = cookies.find((cookie) =>
+          cookie.startsWith("access_token=")
+        );
+        let hasDevToken = false;
+
+        if (accessTokenCookie) {
+          const accessToken = accessTokenCookie.split("=")[1];
+          try {
+            // Decode the JWT payload (middle part of the token)
+            const base64Url = accessToken.split(".")[1];
+            const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+            const jsonPayload = decodeURIComponent(
+              atob(base64)
+                .split("")
+                .map(function (c) {
+                  return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+                })
+                .join("")
+            );
+
+            const payload = JSON.parse(jsonPayload);
+
+            if (payload.role === "developer") {
+              // Store token in localStorage for easier access in frontend code
+              localStorage.setItem("developer_token", accessToken);
+              console.log("Developer token found and stored in localStorage");
+              hasDevToken = true;
+            }
+          } catch (error) {
+            console.error("Error processing token:", error);
+          }
+        }
+
+        // Third task: Check if we have a stored token from previous session
+        if (!hasDevToken && localStorage.getItem("developer_token")) {
+          hasDevToken = true;
+          console.log("Using previously stored developer token");
+        }
+
+        // Fourth task: Add developer status badge if not present
+        if (!document.getElementById("devAuthStatus")) {
+          const headerContainer = document.querySelector("header .container");
+          if (headerContainer) {
+            const statusBadge = document.createElement("div");
+            statusBadge.innerHTML =
+              '<span id="devAuthStatus" class="badge bg-secondary">Developer mode: checking...</span>';
+            statusBadge.style.textAlign = "center";
+            statusBadge.style.marginTop = "10px";
+            headerContainer.appendChild(statusBadge);
+          }
+        }
+
+        // Fifth task: Update the developer status UI
+        updateDevStatus(hasDevToken);
+
+        // Sixth task: Clear password fields and load customer list
+        document.getElementById("librarianPassword").value = "";
+        document.getElementById("customerPassword").value = "";
+        loadCustomerList();
+
+        // Seventh task: Add Enter key event listeners
+        document
+          .getElementById("librarianPassword")
+          .addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              loginAsLibrarian();
+            }
+          });
+
+        document
+          .getElementById("customerPassword")
+          .addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              loginAsCustomer();
+            }
+          });
+
+        // Eighth task: Check for and show toast messages from login
+        const loginMessage = localStorage.getItem("dev_login_message");
+        if (loginMessage && hasDevToken) {
+          // Show success message after a delay to ensure page is loaded
+          setTimeout(() => {
+            Toastify({
+              text: loginMessage,
+              duration: 5000, // 5 seconds
+              close: true,
+              gravity: "top",
+              position: "center",
+              style: {
+                background: "linear-gradient(to right, #00b09b, #96c93d)",
+              },
+              onClick: function () {
+                this.hideToast();
+              },
+            }).showToast();
+          }, 500);
+
+          // Clear message so it doesn't show again
+          localStorage.removeItem("dev_login_message");
+        }
+      });
+
+      // Update the reset database function to ensure it only works on developers.html
+      // Function to reset the database and refresh the page
+      function createTestData() {
+        // Clear any existing toasts
+        clearAllToasts();
+      
+        // First check we're on the developers.html page
+        const currentPath = window.location.pathname;
+        const isDevelopersPage =
+          currentPath.endsWith("/developers.html") ||
+          currentPath.includes("/developers.html");
+      
+        if (!isDevelopersPage) {
+          // Show error toast if not on developers page
+          Toastify({
+            text: "Developer functions can only be used on the developers page",
+            duration: -1, // Never auto-close
+            close: true,
+            gravity: "top",
+            position: "center",
+            style: {
+              background: "linear-gradient(to right, #ff5f6d, #ffc371)",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+            },
+            className: "error-toast",
+            stopOnFocus: true,
+          }).showToast();
+          return;
+        }
+      
+        // Next check for developer token OR dev_mode parameter
+        const developerToken = localStorage.getItem("developer_token");
+        const urlParams = new URLSearchParams(window.location.search);
+        const isDevMode = urlParams.get("dev_mode") === "true";
+      
+        if (!developerToken && !isDevMode) {
+          // Show error toast if no developer token AND no dev_mode
+          Toastify({
+            text: "Authentication Required: You must be logged in as a developer to reset the database",
+            duration: -1, // Never auto-close
+            close: true,
+            gravity: "top",
+            position: "center",
+            style: {
+              background: "linear-gradient(to right, #ff5f6d, #ffc371)",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+            },
+            className: "error-toast",
+            stopOnFocus: true,
+          }).showToast();
+          return;
+        }
+      
+        // Start spinner
+        let spinner = document.getElementById("spinner");
+        spinner.classList.remove("d-none");
+      
+        // For API call with developer token or dev_mode
+        const headers = {
+          "Content-Type": "application/json",
+        };
+      
+        // Add Authorization header only if we have a real token
+        if (developerToken) {
+          headers["Authorization"] = "Bearer " + developerToken;
+        }
+      
+        // Adds dev_mode header if the URL parameter is present
+        if (isDevMode) {
+          headers["X-Dev-Mode"] = "true";
+        }
+      
+        // Make API call
+        fetch("/api/reset_database", {
+          method: "POST",
+          headers: headers,
+        })
+          .then((response) => {
+            return response.json().then((data) => {
+              if (!response.ok) {
+                throw new Error(
+                  `Server Error: ${response.status} - ${
+                    data.message || "Unknown error"
+                  }`
+                );
+              }
+              return data;
+            });
+          })
+          .then((data) => {
+            // Success toast
+            Toastify({
+              text: "Database reset successfully with test data! Refreshing page...",
+              duration: 3000,
+              gravity: "top",
+              position: "center",
+              style: {
+                background: "linear-gradient(to right, #00b09b, #96c93d)",
+              },
+            }).showToast();
+            
+            // Set a timeout to refresh the page after the toast appears
+            setTimeout(() => {
+              // Reload the page to show updated data
+              window.location.reload();
+            }, 2000); // 2 seconds delay for user to see the success message
+          })
+          .catch((error) => {
+            console.error("Error resetting database:", error);
+            // Error toast
+            Toastify({
+              text: `Error: ${error.message}`,
+              duration: -1,
+              close: true,
+              gravity: "top",
+              position: "center",
+              style: {
+                background: "linear-gradient(to right, #ff5f6d, #ffc371)",
+                borderLeft: "4px solid #0d6efd",
+              },
+              className: "error-toast",
+              stopOnFocus: true,
+            }).showToast();
+          })
+          .finally(() => {
+            spinner.classList.add("d-none");
+          });
+      }
+
+      // Helper function to update developer status badge
+      function updateDevStatus(isActive) {
+        const statusBadge = document.getElementById("devAuthStatus");
+        if (statusBadge) {
+          statusBadge.textContent = isActive
+            ? "Developer mode: ACTIVE"
+            : "Developer mode: INACTIVE";
+          statusBadge.className = isActive
+            ? "badge bg-success"
+            : "badge bg-danger";
+        }
+
+        // Also update the TestData button state
+        const resetBtn = document.getElementById("createDataBtn");
+        if (resetBtn) {
+          resetBtn.disabled = !isActive;
+        }
+      }
+
+      // Helper function to check developer permissions
+      function hasDeveloperPermissions() {
+        // Only allow developer operations on the developers page
+        const currentPath = window.location.pathname;
+        const isDevelopersPage =
+          currentPath.endsWith("/developers.html") ||
+          currentPath.includes("/developers.html");
+
+        if (!isDevelopersPage) {
+          return false;
+        }
+
+        // Check for developer token AND/OR dev_mode parameter
+        const hasToken = !!localStorage.getItem("developer_token");
+        const urlParams = new URLSearchParams(window.location.search);
+        const isDevMode = urlParams.get("dev_mode") === "true";
+
+        // Return true if EITHER condition is met
+        return hasToken || isDevMode;
+      }
+
+      // Helper function to clear all toasts
+      function clearAllToasts() {
+        const toasts = document.querySelectorAll(".toastify");
+        toasts.forEach((toast) => {
+          toast.remove();
+        });
+      }
+
+      // Main function to set up developer authentication
+      function setupDeveloperAuth() {
+        // Clear any existing toasts
+        clearAllToasts();
+
+        // Check for existing authentication first
+        let hasValidAuth = false;
+        
+        // Check if there's a valid JWT token in cookies
+        const cookies = document.cookie.split("; ");
+        const accessTokenCookie = cookies.find(cookie => cookie.startsWith("access_token="));
+        
+        if (accessTokenCookie) {
+          const accessToken = accessTokenCookie.split("=")[1];
+          try {
+            // Decode JWT payload
+            const base64Url = accessToken.split(".")[1];
+            const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+            const jsonPayload = decodeURIComponent(
+              atob(base64)
+                .split("")
+                .map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+                .join("")
+            );
+            const payload = JSON.parse(jsonPayload);
+            
+            // If token is for a developer role
+            if (payload.role === "developer") {
+              hasValidAuth = true;
+              // Store in localStorage for convenience
+              localStorage.setItem("developer_token", accessToken);
+            }
+          } catch (error) {
+            console.error("Error processing JWT token:", error);
+          }
+        }
+        
+        // Only use dev_mode parameter if there's no existing valid authentication
+        const urlParams = new URLSearchParams(window.location.search);
+        const isDevMode = urlParams.get("dev_mode") === "true";
+        
+        if (!hasValidAuth) {
+          // Check with server if dev_mode is allowed for this session
+          fetch("/api/verify_developer_access", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ dev_mode: isDevMode }),
+            credentials: "include"
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              // Server verified this is a valid dev session
+              updateDevStatus(true);
+            } else {
+              // Not authorized by server
+              updateDevStatus(false);
+              // If dev_mode was in URL but server rejected it, redirect to homepage
+              if (isDevMode) {
+                Toastify({
+                  text: "Developer access denied. Please log in properly.",
+                  duration: 3000,
+                  gravity: "top",
+                  position: "center",
+                  style: {
+                    background: "linear-gradient(to right, #ff5f6d, #ffc371)"
+                  }
+                }).showToast();
+                
+                setTimeout(() => {
+                  window.location.href = "/frontend/html/homepage.html";
+                }, 2000);
+              }
+            }
+          })
+          .catch(error => {
+            console.error("Error verifying developer access:", error);
+            updateDevStatus(false);
+          });
+        } else {
+          // Valid authenticated developer session
+          updateDevStatus(true);
+        }
+        
+        return hasValidAuth;
+      }
+    </script>
+  </body>
+</html>
